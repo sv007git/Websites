@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-function copyDir(src, dest) {
+function copyDir(src, dest, cleanDest = false) {
+  if (cleanDest && fs.existsSync(dest)) {
+    fs.rmSync(dest, { recursive: true, force: true });
+  }
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
@@ -10,7 +13,7 @@ function copyDir(src, dest) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
+      copyDir(srcPath, destPath, false);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -21,16 +24,16 @@ const distDir = path.resolve('dist');
 const rootDir = path.resolve('.');
 
 if (fs.existsSync(distDir)) {
-  // 1. Copy dist/assets to ./assets
+  // 1. Copy dist/assets to ./assets (clean first to avoid orphan hashes)
   const distAssets = path.join(distDir, 'assets');
   if (fs.existsSync(distAssets)) {
-    copyDir(distAssets, path.join(rootDir, 'assets'));
+    copyDir(distAssets, path.join(rootDir, 'assets'), true);
   }
 
   // 2. Copy dist/modules to ./modules
   const distModules = path.join(distDir, 'modules');
   if (fs.existsSync(distModules)) {
-    copyDir(distModules, path.join(rootDir, 'modules'));
+    copyDir(distModules, path.join(rootDir, 'modules'), true);
   }
 
   // 3. Copy root artifacts (index.html, 404.html, .nojekyll)
