@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>InviteDecide — Intelligent Event Invitations, RSVP, Catering & Seating</title>
+    <meta name="description" content="Production-ready event invitation, RSVP, arrival time slots, catering planner, venue seating, and QR check-in platform." />
+    <!-- Google Fonts for digital invitations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Alex+Brush&display=swap" rel="stylesheet">
+    <script>
+      // Universal GitHub Pages Loader:
+      // If GitHub Pages is configured to serve from 'main' branch directly rather than 'gh-pages',
+      // dynamically load the pre-compiled production CSS and JS bundle!
+      if (window.location.hostname.endsWith('github.io') && !document.querySelector('script[src*="app.js"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = './assets/index.css';
+        document.head.appendChild(link);
+
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.crossOrigin = '';
+        script.src = './assets/app.js';
+        document.head.appendChild(script);
+      }
+    </script>
+    <script type="module" crossorigin src="./assets/app.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index.css">
+  </head>
+  <body class="bg-background text-foreground antialiased min-h-screen">
+    <div id="root"></div>
+  </body>
+</html>

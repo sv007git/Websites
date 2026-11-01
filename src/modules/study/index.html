@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCERT Cartoon Academy | Class 1 to 12 Comics &amp; English Audio</title>
+  <meta name="description" content="Learn all NCERT English medium subjects from Class 1 to 12 through interactive cartoon comic strips, hands-on mini-labs, and spoken English audio narration.">
+
+  <!-- Google Fonts: Bangers & Comic Neue -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,700&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/comic-theme.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-logo-icon">🐾</div>
+        <div class="brand-text">
+          <h1>NCERT Cartoon Academy</h1>
+          <div class="brand-subtitle">Class 1 to 12 • English Medium • Black &amp; White Comics</div>
+        </div>
+      </div>
+
+      <nav class="nav-links-bar" aria-label="Main Navigation">
+        <a href="#curriculum" class="nav-link active" data-view="browse">📚 Curriculum (1-12)</a>
+        <a href="#reader" class="nav-link" data-view="reader">📖 Comic Reader</a>
+        <a href="#labs" class="nav-link" data-view="labs">🧪 Mini-Labs</a>
+        <a href="#parent-hub" class="nav-link" data-view="dashboard">👨‍👩‍👧‍👦 Parent &amp; Kid Hub</a>
+        <a href="#about" class="nav-link" data-view="about">ℹ️ About</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="comic-btn" id="test-voice-btn" title="Hear English welcome speech">
+          🎙️ English Voice
+        </button>
+        <button class="comic-btn" id="mute-toggle-btn" title="Toggle sound effects">
+          🔊 Sound ON
+        </button>
+        <button class="comic-btn" id="theme-toggle-btn" title="Switch between Ink and Noir Manga">
+          🌙 Noir Mode
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="app-main">
+
+    <!-- VIEW 1: BROWSE CURRICULUM (CLASS 1 - 12) -->
+    <section id="view-browse" class="view-section">
+      <!-- Class Picker -->
+      <div class="class-picker-section">
+        <div class="class-picker-title">
+          <h2>Select NCERT Class (1 to 12):</h2>
+          <span class="hero-stage-tag">All Subjects • English Medium Curriculum</span>
+        </div>
+        <div class="class-picker-strip" id="class-picker-strip">
+          <!-- Dynamic Class Buttons 1 to 12 -->
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="curriculum-search-bar">
+        <div class="search-input-wrap">
+          <input 
+            type="text" 
+            id="search-curriculum-input" 
+            class="comic-input" 
+            placeholder="🔍 Search topics across subjects (e.g., Photosynthesis, Newton's Laws, Fractions, Circuits, Atoms)..."
+            aria-label="Search NCERT Curriculum"
+          >
+        </div>
+      </div>
+
+      <!-- Curriculum Grid Mount -->
+      <div id="curriculum-grid-container">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: COMIC STRIP READER -->
+    <section id="view-reader" class="view-section" style="display: none;">
+      <div id="comic-reader-mount">
+        <!-- Rendered by comic-renderer.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: INTERACTIVE MINI-LABS -->
+    <section id="view-labs" class="view-section" style="display: none;">
+      <div id="labs-gallery-mount">
+        <!-- Rendered by app.js & interactive-labs.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 4: PARENT & KID LEARNING HUB -->
+    <section id="view-dashboard" class="view-section" style="display: none;">
+      <div id="dashboard-mount">
+        <!-- Rendered by parent-dashboard.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 5: ABOUT & PARENT GUIDE -->
+    <section id="view-about" class="view-section" style="display: none;">
+      <div class="comic-issue-wrapper">
+        <div class="issue-header-banner">
+          <div class="issue-meta">
+            <span class="comic-badge">PARENT'S COMPANION</span>
+            <span class="comic-badge comic-badge-invert">NCERT ENGLISH MEDIUM</span>
+          </div>
+          <h1 class="issue-title">Why Cartoon Learning Works</h1>
+          <p class="issue-subtitle">Transforming standard NCERT textbooks into memorable comic adventures</p>
+        </div>
+
+        <div class="comic-section-card">
+          <h3 class="section-title">🐾 The Vision: Visual Metaphors + English Speech</h3>
+          <p style="margin-bottom: 14px; font-size: 15px; line-height: 1.6;">
+            As parents, we want our children to build a deep, genuine intuition for science, mathematics, and world history—not just memorize definitions for exams.
+          </p>
+          <p style="margin-bottom: 14px; font-size: 15px; line-height: 1.6;">
+            The <strong>NCERT Cartoon Academy</strong> takes official CBSE/NCERT English Medium textbooks from Class 1 through Class 12 and converts each core concept into an episodic comic strip:
+          </p>
+          <ul style="margin-left: 24px; margin-bottom: 16px; font-size: 14px; line-height: 1.8;">
+            <li><strong>High-Contrast Black &amp; White Manga Theme:</strong> Minimizes eye strain, evokes the tactile charm of newspaper comic strips and manga sketchbooks, and works great on any device or printer.</li>
+            <li><strong>English Audio Speech Narration:</strong> Uses the browser's native Web Speech synthesis to read every dialogue bubble and panel caption in clear English with character voice profiles (Prof. Paws, Pixel Bot, Sparky, and Luna Owl).</li>
+            <li><strong>Interactive Mini-Labs:</strong> Hands-on simulators that let children physically test the formulas (F = ma, V = IR, Photosynthesis ingredient balances, Pizza fractions) right inside the browser.</li>
+            <li><strong>Parent Discussion Prompts:</strong> Thoughtful, dinner-table conversation starters that help you reinforce learning at home without feeling like homework.</li>
+          </ul>
+        </div>
+
+        <div class="comic-section-card">
+          <h3 class="section-title">🌐 GitHub Repository &amp; Hosting</h3>
+          <p style="margin-bottom: 12px; font-size: 14px;">
+            This project is designed as a standalone static web application for GitHub Pages.
+          </p>
+          <div style="background: var(--bg-secondary); border: 2px solid var(--ink-border); padding: 14px; border-radius: 6px;">
+            <strong>GitHub Repository:</strong> 
+            <a href="https://github.com/sv007git/Study" target="_blank" rel="noopener" class="footer-repo-link">
+              https://github.com/sv007git/Study
+            </a><br>
+            <strong>Live GitHub Pages URL:</strong> 
+            <a href="https://sv007git.github.io/Study/" target="_blank" rel="noopener" class="footer-repo-link">
+              https://sv007git.github.io/Study/
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div>
+        <strong>NCERT Cartoon Academy</strong> • English Medium • Class 1 to 12
+      </div>
+      <div>
+        Designed for <a href="https://github.com/sv007git/Study" target="_blank" rel="noopener" class="footer-repo-link">github.com/sv007git/Study</a>
+      </div>
+      <div>
+        Pure Black &amp; White Comic Aesthetic • Spoken English Audio Narration
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/audio-narrator.js"></script>
+  <script src="js/ncert-curriculum.js"></script>
+  <script src="js/comic-stories.js"></script>
+  <script src="js/interactive-labs.js"></script>
+  <script src="js/quiz-engine.js"></script>
+  <script src="js/parent-dashboard.js"></script>
+  <script src="js/comic-renderer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

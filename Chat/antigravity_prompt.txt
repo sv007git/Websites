@@ -1,0 +1,406 @@
+================================================================================
+JUST YOU & ME 💗 — SYSTEM SPECIFICATION & REPOSITORY ARCHITECTURE PROMPT
+================================================================================
+Document Purpose:
+This document is the authoritative, comprehensive architectural guide for the
+"Just You & Me" repository. Any Antigravity agent or developer can ingest this
+single file to immediately understand every module, data contract, database schema,
+realtime channel, subsystem, design convention, and test procedure without wasting
+tokens scanning files across the workspace.
+================================================================================
+
+1. PROJECT OVERVIEW & ARCHITECTURAL OBJECTIVE
+--------------------------------------------------------------------------------
+"Just You & Me" is a private, real-time, romantic web application engineered
+exclusively for two people in a relationship (a couple).
+
+Core Value Propositions:
+- Absolute Privacy & Zero Third-Party Intrusion: PostgreSQL Row Level Security (RLS)
+  and database triggers strictly restrict each couple space to exactly two partners.
+- Synchronous Shared Experiences: Realtime chat, synchronized movie watching,
+  1-on-1 HD WebRTC voice & video calling, and interactive romantic gestures.
+- Intimacy & Daily Care Tracking: Menstrual cycle calculator with 4-phase calendar
+  breakdowns and morning care notifications, shared birthdays & anniversaries,
+  photo memories gallery, love notes scratchpad, and 7 dynamic aesthetic themes.
+- Mobile-First & Responsive: Optimized for mobile viewports (100dvh, safe area insets,
+  floating touch controls, camera flipping, touch gestures).
+
+--------------------------------------------------------------------------------
+2. TECH STACK & DEPENDENCIES
+--------------------------------------------------------------------------------
+- Framework: React 18.3.1 (Single Page Application using Vite 6.2.0)
+- Styling: Tailwind CSS 3.4.17 with PostCSS and custom romantic gradients
+- Icons: Lucide React (1.16.0)
+- Database & Backend: Supabase (PostgreSQL 15+, Supabase Auth, Realtime, Storage)
+- Realtime Protocols:
+  * Supabase Realtime Channels: Postgres changes, Broadcast, and Presence
+  * WebRTC (RTCPeerConnection) with STUN/TURN fallbacks for peer-to-peer AV calls
+- Native Browser APIs:
+  * Web Audio API: Zero-asset synthetic ringtone & romantic chime generators
+  * Web Notifications API: System alerts for incoming calls, messages, cycle reminders
+  * MediaStream & MediaRecorder: Voice notes and camera capture
+- Date Utilities: date-fns (4.1.0) and custom local date helpers
+- Effects: Canvas Confetti (1.9.4) for romantic celebrations
+- Testing: Vitest (3.0.7) with JSDOM and in-memory Supabase mocks
+
+--------------------------------------------------------------------------------
+3. COMPLETE DIRECTORY & FILE MAP
+--------------------------------------------------------------------------------
+c:\Users\HARISH VYAS\Projects\Chat\
+├── .env.example                       # Reference environment variables template
+├── index.html                         # Entry HTML with viewport & theme-color meta
+├── package.json                       # Scripts: dev, build, preview, test
+├── postcss.config.js                  # PostCSS plugins config (tailwindcss, autoprefixer)
+├── tailwind.config.js                 # Theme colors, animations (heartbeat, float, shimmer)
+├── vite.config.js                     # Vite build configuration with React plugin
+├── public/
+│   └── 404.html                       # SPA routing redirect fallback for static hosts
+├── supabase/
+│   ├── schema.sql                     # Complete PostgreSQL tables, triggers, RLS & RPCs
+│   ├── add_metadata_columns.sql       # Idempotent migration for metadata JSONB & theme
+│   ├── quick_fix_delete_account.sql   # Standalone RPC for atomic user/couple deletion
+│   └── README.md                      # Supabase deployment instructions
+├── tests/
+│   ├── setup.js                       # Test setup with WebRTC and localStorage mocks
+│   ├── calculators.test.js            # Unit tests for cycle calculations and birthdays
+│   ├── features.test.js               # Tests for core couple UI feature states
+│   ├── pairing.test.js                # Tests for invite code generation and pairing
+│   ├── storageHelper.test.js          # Tests for file upload and storage RLS paths
+│   ├── supabaseClient.test.js         # Tests for client initialization and fallbacks
+│   ├── syncEngine.test.js             # Tests for video sync engine and drift correction
+│   └── webrtc.test.js                 # Tests for WebRTC peer connection and ICE config
+└── src/
+    ├── main.jsx                       # React DOM entry point rendering <App />
+    ├── index.css                      # Tailwind base directives and custom animations
+    ├── App.jsx                        # Master container, tab switching, and notifications
+    ├── context/
+    │   ├── AuthContext.jsx            # Supabase Auth, profile caching, login/signup/delete
+    │   ├── CoupleContext.jsx          # Space pairing, partner profile, presence channel
+    │   ├── CallContext.jsx            # WebRTC calling state, AV streams, device controls
+    │   └── ThemeContext.jsx           # 7 aesthetic themes, dark mode, realtime theme sync
+    ├── lib/
+    │   ├── supabaseClient.js          # Supabase client singleton with offline fallback
+    │   ├── webrtc.js                  # WebRtcCallManager, ICE servers, SDP signaling
+    │   ├── syncEngine.js              # WatchSyncEngine, URL normalizer, drift sync
+    │   ├── storageHelper.js           # Media upload, delete, and couple space URL resolver
+    │   ├── reactionHelper.js          # Emoji reaction toggling in message metadata
+    │   ├── notificationHelper.js      # Web Audio chimes and browser notification API
+    │   ├── audioRing.js               # Web Audio synthesizer for phone call ringtones
+    │   ├── coupleDataHelper.js        # Multi-tier persistence for cycle & birthday data
+    │   ├── cycleCalculatorHelper.js   # Local date math, 4-phase cycle and care advice
+    │   └── cycleNotificationHelper.js # Daily 6 AM - 12 PM partner cycle morning alert
+    └── components/
+        ├── Navbar.jsx                 # Top bar with partner avatar, mood, and active tab
+        ├── BottomNav.jsx              # Mobile bottom navigation bar with 6 core tabs
+        ├── Auth/
+        │   ├── AuthModal.jsx          # Email/password Sign In and Sign Up modal
+        │   ├── ConfigModal.jsx        # Supabase URL & Anon Key configuration dialog
+        │   └── PairingScreen.jsx      # Create space, generate code, or join partner space
+        ├── Calling/
+        │   └── CallModal.jsx          # Fullscreen & PiP call modal with camera flip, mute
+        ├── Chat/
+        │   ├── ChatView.jsx           # Realtime message feed, typing indicator, reactions
+        │   ├── ChatInput.jsx          # Message input with photo, voice note, and GIF picker
+        │   ├── MessageBubble.jsx      # Message styling, delivery status, reactions drawer
+        │   ├── VoiceRecorder.jsx      # Audio recording interface with audio waveform
+        │   ├── GifPicker.jsx          # Romantic GIF search and curated picker
+        │   └── MediaLightbox.jsx      # Fullscreen image/video lightbox with zoom & pan
+        ├── WatchTogether/
+        │   └── WatchRoom.jsx          # Synchronized video player with partner call overlay
+        ├── Memories/
+        │   └── MemoriesView.jsx       # Shared romantic photo gallery and milestones
+        ├── Notes/
+        │   ├── NotesView.jsx          # Multi-tab view: Love Notes, Cycle Care, Birthdays
+        │   ├── CycleCalculator.jsx    # Menstrual tracker, phase badge, partner care list
+        │   └── BirthdayCalculator.jsx # Birthday countdowns, zodiac sign, gift ideas
+        ├── Dashboard/
+        │   └── DashboardView.jsx      # Couple overview, days together counter, love quotes
+        ├── Profile/
+        │   └── AvatarCropperModal.jsx # Avatar photo crop and circular thumbnail generator
+        └── Settings/
+            └── SettingsView.jsx       # Theme picker, anniversary edit, TURN setup, delete
+
+--------------------------------------------------------------------------------
+4. DATABASE SCHEMAS & STORED PROCEDURES (SUPABASE / POSTGRESQL)
+--------------------------------------------------------------------------------
+All tables belong to the `public` schema and enforce ROW LEVEL SECURITY (RLS).
+
+Table: public.profiles
+- id: UUID PRIMARY KEY (references auth.users.id ON DELETE CASCADE)
+- display_name: TEXT NOT NULL
+- avatar_url: TEXT
+- status_mood: TEXT DEFAULT 'Thinking of you 💭'
+- created_at / updated_at: TIMESTAMPTZ
+
+Table: public.couple_spaces
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- name: TEXT NOT NULL DEFAULT 'Just You & Me'
+- anniversary_date: DATE
+- welcome_message: TEXT DEFAULT 'Forever & always 💗'
+- theme_preference: TEXT DEFAULT 'blush'
+- metadata: JSONB DEFAULT '{}'::jsonb (stores cycle and birthday data)
+- created_by: UUID (references auth.users.id)
+- created_at / updated_at: TIMESTAMPTZ
+
+Table: public.couple_members
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID NOT NULL (references couple_spaces.id ON DELETE CASCADE)
+- user_id: UUID NOT NULL UNIQUE (references auth.users.id ON DELETE CASCADE)
+- role: TEXT DEFAULT 'partner'
+- joined_at: TIMESTAMPTZ
+* Capacity Constraint: Database trigger `tr_check_couple_space_capacity` strictly
+  rejects any insert if the space already contains 2 members.
+
+Table: public.invitations
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID (references couple_spaces.id ON DELETE CASCADE)
+- code: VARCHAR(32) NOT NULL UNIQUE (8-character alphanumeric string)
+- created_by: UUID (references auth.users.id)
+- expires_at: TIMESTAMPTZ (defaults to +7 days)
+- used_at / used_by: TIMESTAMPTZ / UUID
+
+Table: public.messages
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID (references couple_spaces.id ON DELETE CASCADE)
+- sender_id: UUID (references auth.users.id)
+- content: TEXT
+- message_type: TEXT ('text', 'image', 'video', 'audio', 'gif', 'sticker')
+- media_url: TEXT
+- media_metadata: JSONB DEFAULT '{}'::jsonb (stores reactions, duration, dims)
+- reply_to_id: UUID (references messages.id ON DELETE SET NULL)
+- is_edited: BOOLEAN DEFAULT FALSE
+- created_at: TIMESTAMPTZ
+
+Table: public.memories
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID (references couple_spaces.id ON DELETE CASCADE)
+- created_by: UUID (references auth.users.id)
+- title: TEXT NOT NULL
+- description: TEXT
+- media_url: TEXT NOT NULL
+- memory_date: DATE DEFAULT CURRENT_DATE
+- is_favorite: BOOLEAN DEFAULT FALSE
+- created_at: TIMESTAMPTZ
+
+Table: public.love_notes
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID (references couple_spaces.id ON DELETE CASCADE)
+- author_id: UUID (references auth.users.id)
+- title: TEXT (also used for system fallback records e.g. '__SYSTEM_CYCLE__')
+- content: TEXT NOT NULL
+- color: TEXT DEFAULT 'rose' ('rose', 'lavender', 'blush', 'amber')
+- is_pinned: BOOLEAN DEFAULT FALSE
+- created_at / updated_at: TIMESTAMPTZ
+
+Table: public.watch_sessions
+- id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- couple_space_id: UUID UNIQUE (references couple_spaces.id ON DELETE CASCADE)
+- video_url: TEXT NOT NULL
+- video_title: TEXT DEFAULT 'Movie Night'
+- playback_position: NUMERIC(10, 3) DEFAULT 0
+- is_playing: BOOLEAN DEFAULT FALSE
+- playback_rate: NUMERIC(3, 2) DEFAULT 1.0
+- last_updated_by: UUID (references auth.users.id)
+- updated_at: TIMESTAMPTZ
+
+Security Helper Functions & Stored Procedures (SECURITY DEFINER):
+- is_couple_member(p_user_id UUID, p_space_id UUID) -> BOOLEAN
+- get_my_couple_space_id() -> UUID
+- handle_new_user() -> Trigger on auth.users to auto-populate public.profiles
+- create_couple_space(p_name, p_anniversary_date, p_welcome_message) -> JSONB
+  Atomically creates space, adds creator as member, and creates 8-char invitation.
+- accept_invitation(invite_code) -> JSONB
+  Verifies code validity, checks capacity < 2, adds partner, marks code as used.
+- delete_user_account() -> JSONB
+  Deletes couple space (if sole owner or wiping), memberships, profiles, storage
+  objects, and deletes row from auth.users to free up the email.
+
+Supabase Storage Bucket:
+- Bucket Name: 'couple-media' (Private, 50MB file size limit)
+- RLS Policy: Only couple members can read or write to paths starting with:
+  `${couple_space_id}/*`
+
+Multi-Tier Persistence Architecture (coupleDataHelper.js):
+To ensure maximum resilience against schema variations (e.g. if a Supabase
+instance has not run `add_metadata_columns.sql`):
+1. Level 1: `couple_spaces.metadata` (PostgreSQL JSONB column)
+2. Level 2: `love_notes` table fallback row with title `__SYSTEM_CYCLE__` or
+   `__SYSTEM_BIRTHDAYS__` (guaranteed to exist across all standard schemas)
+3. Level 3: `localStorage` browser cache (`just_you_me_cycle`, `just_you_me_birthdays`)
+   for instant zero-latency loading and offline resilience
+4. Level 4: Supabase Realtime broadcast via `presenceChannel` for instant peer sync.
+
+--------------------------------------------------------------------------------
+5. REALTIME CHANNELS & SIGNALING CONVENTIONS
+--------------------------------------------------------------------------------
+Supabase Realtime handles all instant peer-to-peer data:
+
+1. Channel: `couple_presence_${coupleSpaceId}`
+   - Tracks online presence and partner typing status (`partner-typing`).
+   - Broadcast Events:
+     * `couple-theme-updated`: Syncs palette changes instantly to partner.
+     * `couple-cycle-updated`: Syncs menstrual cycle dates to partner.
+     * `couple-birthdays-updated`: Syncs birthdays to partner.
+
+2. Channel: `call_signaling_${coupleSpaceId}`
+   - WebRTC 1-to-1 signaling with `{ broadcast: { self: false } }`.
+   - Broadcast Events:
+     * `call-offer`: Initiator sends SDP offer `{ sdp, isVideo, callerId, callerName }`.
+     * `call-answer`: Receiver sends SDP answer `{ sdp, isVideo }`.
+     * `ice-candidate`: Exchanges RTCIceCandidate items.
+     * `call-ended`: Either party terminates the call.
+     * `call-rejected`: Receiver rejects incoming call.
+     * `camera-state`: Notifies partner when camera is turned on/off.
+
+3. Channel: `watch_sync_${coupleSpaceId}`
+   - Synchronizes movie playback state.
+   - Broadcast Events:
+     * `play`: `{ currentTime, timestamp }`
+     * `pause`: `{ currentTime }`
+     * `seek`: `{ currentTime, isPlaying }`
+     * `ratechange`: `{ playbackRate }`
+     * `request-sync`: When a partner joins or reloads, requests current position.
+     * `sync-state`: Responds to sync requests with current movie state.
+
+4. Postgres Changes Listener on `messages`:
+   - Subscribes to `INSERT`, `UPDATE`, `DELETE` on `messages` table filtered
+     by `couple_space_id=eq.${coupleSpaceId}`.
+
+--------------------------------------------------------------------------------
+6. CONTEXT PROVIDER HIERARCHY & COMPONENT TREE
+--------------------------------------------------------------------------------
+In `src/App.jsx`, providers are nested in this exact order:
+
+<ThemeProvider>
+  <AuthProvider>
+    <CoupleProvider>
+      <CallProvider>
+        <AppContent />
+      </CallProvider>
+    </CoupleProvider>
+  </AuthProvider>
+</ThemeProvider>
+
+Context Responsibilities:
+- ThemeProvider (`useTheme`):
+  Manages 7 romantic color palettes (`blush`, `rose`, `lavender`, `midnight`,
+  `sunset`, `ocean`, `emerald`), dark mode boolean, theme sync timestamps,
+  and updates `document.documentElement` class list and meta `theme-color`.
+- AuthProvider (`useAuth`):
+  Tracks Supabase `session`, `user`, and `profile`. Provides `signIn`, `signUp`,
+  `signOut`, `updateProfile`, and `deleteAccount`.
+- CoupleProvider (`useCouple`):
+  Tracks couple membership, `coupleSpace`, `partner` profile, and presence channel.
+  Provides `isPaired`, `createSpace`, `joinSpace`, `leaveSpace`, and `updateCoupleSpace`.
+- CallProvider (`useCall`):
+  Initializes `WebRtcCallManager`. Manages `callState` ('idle', 'outgoing',
+  'incoming', 'connecting', 'connected', 'ended'), streams (`localStream`,
+  `remoteStream`), mute states (`isMuted`, `isVideoEnabled`, `isSpeakerMuted`),
+  call duration, and controls (`startCall`, `acceptCall`, `rejectCall`,
+  `endCall`, `toggleMute`, `toggleVideo`, `toggleSpeaker`, `flipCamera`).
+
+Tab Structure in AppContent:
+Tabs are kept mounted in the DOM to preserve scroll positions and active connections:
+1. 'dashboard' -> `<DashboardView />`
+2. 'chat'      -> `<ChatView />`
+3. 'watch'     -> `<WatchRoom />`
+4. 'memories'  -> `<MemoriesView />`
+5. 'notes'     -> `<NotesView />` (Love Notes, Cycle Tracker, Birthdays)
+6. 'settings'  -> `<SettingsView />`
+
+--------------------------------------------------------------------------------
+7. CRITICAL SUBSYSTEM IMPLEMENTATION DETAILS & RULES
+--------------------------------------------------------------------------------
+A. WebRTC Calling Engine (src/lib/webrtc.js & src/components/Calling/CallModal.jsx)
+- Audio / Video Element Muting Rules:
+  * Local video element (`localVideoRef`): MUST have `muted={true}` to prevent audio feedback.
+  * Remote video element (`remoteVideoRef`): MUST have `muted={false}`. Audio will be
+    silent if muted is left true!
+  * Stream Assignment: NEVER unconditionally reassign `videoRef.srcObject = stream`
+    on every render, as this restarts the media playback pipeline and causes flickering.
+    Always guard with: `if (videoRef.current.srcObject !== stream) videoRef.current.srcObject = stream;`
+- Audio Priming on User Interaction:
+  * On mobile browsers (iOS Safari & Android Chrome), audio playback is blocked unless
+    initiated during a user gesture. Both `startCall` and `acceptCall` prime the audio
+    context immediately upon the tap event.
+- Dynamic Camera Toggle:
+  * In audio calls, if the user toggles video on, `enableCamera()` requests a video stream
+    from `navigator.mediaDevices.getUserMedia`, replaces the black sender track using
+    `RTCRtpSender.replaceTrack()`, and broadcasts `camera-state` to the partner.
+- Picture-in-Picture Suppression on Watch Tab:
+  * While the user is on the `watch` tab (`currentTab === 'watch'`), the floating
+    mini-call PiP in `CallModal.jsx` is suppressed to avoid duplicate partner video
+    overlays with the Watch Together theater.
+
+B. Watch Together Sync Engine (src/lib/syncEngine.js & src/components/WatchTogether/WatchRoom.jsx)
+- Video URL Normalizer (`normalizeVideoUrl`):
+  * Google Drive links: Converts `drive.google.com/file/d/<id>/view` into direct streaming:
+    `https://drive.usercontent.google.com/download?id=<id>&export=download&confirm=t`
+  * Dropbox links: Replaces `dl=0` with `raw=1`.
+- Drift Correction:
+  * Threshold: `DRIFT_THRESHOLD_SECONDS = 1.5`.
+  * If local playback drifts more than 1.5s from the partner's packet (adjusted for
+    network latency via `calculateTargetTime`), it snaps the video element `currentTime`.
+- Watch Room Mobile Layout:
+  * Uses the same layout container as MemoriesView: `flex-1 max-w-4xl mx-auto w-full p-4 pb-20 space-y-4`.
+  * Integrated call overlay provides floating touch controls (mic mute, camera toggle,
+    speaker mute, movie volume slider, movie mute toggle, and call end).
+
+C. Cycle & Menstrual Phase Calculator (src/lib/cycleCalculatorHelper.js & src/lib/cycleNotificationHelper.js)
+- Date Parsing Rule:
+  * NEVER use `new Date('YYYY-MM-DD')` directly, because JavaScript treats YYYY-MM-DD
+    as UTC midnight, which shifts backwards by one day in timezones west of UTC.
+  * ALWAYS use `parseLocalDate(dateStr)` and `formatLocalDate(dateObj)`.
+- 4-Phase Calculations:
+  * Menstrual Phase: Days 1 to periodLength (default 5 days).
+  * Follicular Phase: Days (periodLength + 1) to (ovulationDay - 1).
+  * Ovulation Phase: Days (ovulationDay - 1) to (ovulationDay + 2).
+  * Luteal Phase: Days (ovulationDay + 3) to cycleLength.
+- Next Period Countdown:
+  * Calculates `lastPeriodDate + cycleLength`. If current date is past this date,
+    reports "Cycle Day X (Overdue by Y days)".
+- Daily Morning Notification:
+  * `checkAndNotifyCyclePhase()` checks if the current time is between 6:00 AM and 12:00 PM.
+    If today's phase notification hasn't fired yet, it generates an in-app toast, browser
+    system notification, and plays a romantic audio chime.
+
+D. Dynamic Theme Engine (src/context/ThemeContext.jsx)
+- 7 Palettes: `blush` (rose/pink), `rose` (deep velvet), `lavender` (purple/fuchsia),
+  `midnight` (indigo/slate), `sunset` (amber/peach), `ocean` (cyan/teal), `emerald` (mint/teal).
+- Reload & Multi-Device Sync:
+  * Local storage uses timestamp `just_you_me_palette_updated_at`.
+  * The space database row stores `palette_updated_at`.
+  * The fresher timestamp always wins on reload, preventing theme reverts.
+
+--------------------------------------------------------------------------------
+8. COMMON GOTCHAS & RULES OF THUMB FOR DEVELOPERS
+--------------------------------------------------------------------------------
+1. PowerShell Syntax on Windows:
+   - NEVER chain commands using `&&` in Windows PowerShell (PowerShell 5.1 throws parse error).
+   - Use semicolon `;` or run commands sequentially:
+     `npm test; npm run build`
+2. Supabase Anonymous Client:
+   - If user is not authenticated, all RLS-protected queries return empty sets or errors.
+   - Mock client in `tests/` allows unit testing without live network connections.
+3. Media File Upload Paths:
+   - When calling `uploadCoupleMedia(file, coupleSpaceId)`, the path MUST start with
+     `${coupleSpaceId}/`. If you omit the space ID, Supabase Storage RLS will reject
+     the upload with permission denied.
+4. Preserving Documentation Integrity:
+   - Keep existing comments, tests, and database migrations intact when editing code.
+
+--------------------------------------------------------------------------------
+9. VERIFICATION & VALIDATION SUITE
+--------------------------------------------------------------------------------
+Run unit tests (all 45 tests across 7 suites):
+  npm test
+  # or: npx vitest run
+
+Run production build check:
+  npm run build
+
+Run local development server:
+  npm run dev
+================================================================================
+END OF SPECIFICATION PROMPT
+================================================================================

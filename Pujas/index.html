@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanatana Pujas & Pariharams | Hindu Rituals, Vratams & Audio Guide</title>
+  <meta name="description" content="Authentic Hindu Pujas, Shodasha Samskaras by Life Phase, Vratams, Dosha Pariharams, Samagri Checklists, Mantras with Meanings in English & Telugu, and Audio Speaking.">
+  <meta name="theme-color" content="#0b0d11">
+
+  <!-- Open Graph Meta for Social Sharing -->
+  <meta property="og:title" content="Sanatana Pujas & Pariharams - Audio Speaking & Life Phase Guide">
+  <meta property="og:description" content="Step-by-step Hindu Pujas, Shodasha Samskaras, Vratams, Dosha Pariharams, Mantras, Meanings in English & Telugu with Voice Audio and Temple Bell.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sv007git.github.io/Pujas/">
+
+  <!-- Google Fonts: Cinzel & Noto Sans Telugu -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪔</text></svg>">
+</head>
+<body>
+
+  <!-- STICKY NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <!-- Sacred Diya SVG Icon -->
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C11.5 2 11 3.5 11 5.5C11 7.5 12 9 12 9C12 9 13 7.5 13 5.5C13 3.5 12.5 2 12 2ZM4 13C4 16.87 7.13 20 11 20H13C16.87 20 20 16.87 20 13C20 12.5 19.5 12 19 12H5C4.5 12 4 12.5 4 13ZM12 22C10.9 22 10 21.1 10 20H14C14 21.1 13.1 22 12 22Z"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span>SANATANA PUJAS</span>
+          <span>సనాతన పూజా విధి</span>
+        </div>
+      </a>
+
+      <!-- Quick Action Controls -->
+      <div class="nav-controls">
+        <button class="btn-control" id="templeBellBtn" title="Ring Temple Bell">
+          🔔 <span data-i18n="templeBell">Temple Bell</span>
+        </button>
+        <button class="btn-control" id="conchBtn" title="Sound Conch">
+          🐚 <span data-i18n="conch">Sacred Conch</span>
+        </button>
+        <button class="btn-control" id="wakeLockBtn" title="Keep Screen Awake During Puja">
+          🛡️ <span data-i18n="screenWakeOff">Keep Screen Awake</span>
+        </button>
+        <button class="btn-control" id="langToggleBtn" title="Switch Language">
+          🌐 తెలుగు
+        </button>
+        <button class="btn-control" id="themeToggleBtn" title="Toggle Theme">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Light Theme
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="hero-om">ॐ</div>
+    <h1 class="hero-title">
+      <span class="gradient-text" data-i18n="siteTitle">Sanatana Pujas & Pariharams</span>
+    </h1>
+    <p class="hero-subtitle" data-i18n="siteTagline">
+      Hindu Rituals, Samskaras, Vratams & Pariharams by Life Phase with Voice Audio
+    </p>
+
+    <div class="hero-badges">
+      <span class="badge">🌸 <b>16</b> Shodasha Samskaras</span>
+      <span class="badge">🪔 <b>7+</b> Major Vratams</span>
+      <span class="badge">🔱 <b>6+</b> Dosha Pariharams</span>
+      <span class="badge">🔊 <b>100%</b> Voice Audio (English & Telugu)</span>
+      <span class="badge">🔔 Vedic Temple Bell</span>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn-primary" id="heroSankalpamBtn">
+        ✨ <span data-i18n="generateSankalpam">Personalized Sankalpam</span>
+      </button>
+      <a href="#pujasGrid" class="btn-secondary">
+        📜 Explore All Pujas
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="main-content">
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <section class="filter-bar">
+      <!-- Search Input -->
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search puja, festival, pariharam, or deity..."
+          autocomplete="off">
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="category-tabs" role="tablist">
+        <button class="category-tab active" data-category="all" role="tab">
+          <span data-i18n="allCategories">All Pujas</span>
+        </button>
+        <button class="category-tab" data-category="life-phase" role="tab">
+          <span data-i18n="lifePhase">🌸 Life Phases (Samskaras)</span>
+        </button>
+        <button class="category-tab" data-category="vratam-festival" role="tab">
+          <span data-i18n="vratams">🪔 Vratams & Festivals</span>
+        </button>
+        <button class="category-tab" data-category="pariharam" role="tab">
+          <span data-i18n="pariharams">🔱 Dosha Pariharams</span>
+        </button>
+        <button class="category-tab" data-category="daily" role="tab">
+          <span data-i18n="daily">☀️ Daily Observances</span>
+        </button>
+        <button class="category-tab" data-category="bookmarks" role="tab">
+          <span data-i18n="bookmarks">⭐ Bookmarks</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PUJAS GRID CARDS -->
+    <section class="pujas-grid" id="pujasGrid">
+      <!-- Injected dynamically via app.js -->
+    </section>
+
+  </main>
+
+  <!-- PUJA DETAIL MODAL -->
+  <div class="modal-backdrop" id="pujaModal" role="dialog" aria-modal="true">
+    <div class="modal-container">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.35rem; align-items: center;">
+            <span class="phase-pill" id="modalPhase"></span>
+            <span style="font-size: 0.85rem; color: var(--accent-gold);" id="modalDeity"></span>
+          </div>
+          <h2 id="modalTitle"></h2>
+          <p id="modalSubtitle"></p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <button class="btn-primary" id="modalPlayAllBtn" style="padding: 0.45rem 1rem; font-size: 0.85rem;">
+            ▶️ <span data-i18n="playFullPuja">Full Puja Audio</span>
+          </button>
+          <button class="btn-close-modal" id="closeModalBtn" title="Close">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="vidhi">
+          📖 <span data-i18n="vidhiTitle">Step-by-Step Procedure</span>
+        </button>
+        <button class="modal-tab" data-tab="samagri">
+          🧺 <span data-i18n="samagriTitle">Things Needed (Samagri)</span>
+        </button>
+        <button class="modal-tab" data-tab="mantras">
+          🕉️ <span data-i18n="mantrasTitle">Mantras & Meanings</span>
+        </button>
+        <button class="modal-tab" data-tab="timing">
+          ⏳ <span data-i18n="timingTitle">Auspicious Timing</span>
+        </button>
+      </div>
+
+      <!-- Modal Body Content -->
+      <div class="modal-body" id="modalBody">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SANKALPAM GENERATOR MODAL -->
+  <div class="modal-backdrop" id="sankalpamModal" role="dialog" aria-modal="true">
+    <div class="modal-container" style="max-width: 750px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 data-i18n="sankalpamModalTitle">Personalized Vedic Sankalpam Builder</h2>
+          <p>Generate classical Vedic Sankalpam with your Gotram, Nakshatram, and Name</p>
+        </div>
+        <button class="btn-close-modal" id="closeSankalpamModalBtn" title="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" data-i18n="yourGotra">Your Gotram</label>
+            <input type="text" id="sankalpamGotra" class="search-input" placeholder="e.g. Bharadwaja / Kashyapa" style="padding: 0.6rem 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" data-i18n="yourNakshatra">Your Birth Star (Nakshatra)</label>
+            <input type="text" id="sankalpamNakshatra" class="search-input" placeholder="e.g. Rohini / Hasta" style="padding: 0.6rem 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" data-i18n="yourName">Your Full Name</label>
+            <input type="text" id="sankalpamName" class="search-input" placeholder="e.g. Harish Sharma" style="padding: 0.6rem 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;" data-i18n="spouseName">Spouse Name (Optional)</label>
+            <input type="text" id="sankalpamSpouse" class="search-input" placeholder="Spouse name" style="padding: 0.6rem 0.85rem;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <button class="btn-primary" id="generateSankalpamSubmit">
+            🔄 <span data-i18n="generateBtn">Generate Sankalpam</span>
+          </button>
+          <button class="btn-secondary" id="speakSankalpamBtn">
+            🔊 <span data-i18n="listenSankalpam">Listen to Sankalpam</span>
+          </button>
+        </div>
+
+        <!-- Generated Output -->
+        <div id="sankalpamOutput"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING PERSISTENT AUDIO DOCK -->
+  <aside class="audio-dock" id="audioDock" aria-label="Audio Reciter Bar">
+    <div class="audio-track-info">
+      <div class="audio-art">🪔</div>
+      <div class="audio-text-meta">
+        <h4 id="dockTitle">Puja Recitation</h4>
+        <p id="dockSubtitle">Voice chanting starting...</p>
+      </div>
+      <div class="audio-wave">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+    </div>
+
+    <div class="audio-dock-controls">
+      <button class="btn-dock" id="dockPrevBtn" title="Previous Step">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="19 20 9 12 19 4 19 20"/>
+          <line x1="5" y1="19" x2="5" y2="5"/>
+        </svg>
+      </button>
+
+      <button class="btn-dock btn-play-pause" id="dockPlayPauseBtn" title="Play / Pause">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+      </button>
+
+      <button class="btn-dock" id="dockNextBtn" title="Next Step">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 4 15 12 5 20 5 4"/>
+          <line x1="19" y1="5" x2="19" y2="19"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="audio-dock-settings">
+      <select class="speed-select" id="speedSelect" title="Audio Speed">
+        <option value="0.75">0.75x (Meditative)</option>
+        <option value="0.9" selected>0.9x (Recommended)</option>
+        <option value="1.0">1.0x (Normal)</option>
+        <option value="1.2">1.2x (Brisk)</option>
+      </select>
+      <button class="btn-dock" id="dockCloseBtn" title="Stop & Close Audio">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-quote">
+      "Dharmo Rakshati Rakshitaha" • "Lokaah Samastaah Sukhino Bhavantu"
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/sv007git/Pujas" target="_blank" rel="noopener noreferrer">
+        💻 GitHub: sv007git/Pujas
+      </a>
+      <a href="#pujasGrid">Pujas Directory</a>
+      <a href="#" id="footerSankalpamLink">Vedic Sankalpam</a>
+    </div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+      Dedicated to the practice and preservation of Sanatana Dharma • Hosted on GitHub Pages
+    </p>
+  </footer>
+
+  <!-- JAVASCRIPT MODULES IN DEPENDENCY ORDER -->
+  <script src="js/data/panchang-data.js"></script>
+  <script src="js/data/pujas-life-phase.js"></script>
+  <script src="js/data/pujas-vratams.js"></script>
+  <script src="js/data/pujas-pariharams.js"></script>
+  <script src="js/data/pujas-daily.js"></script>
+  <script src="js/data/pujas-data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/audio-player.js"></script>
+  <script src="js/sankalpam.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

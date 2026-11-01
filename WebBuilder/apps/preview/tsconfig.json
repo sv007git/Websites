@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@webforge/schema": ["../../packages/schema/src/index.ts"],
+      "@webforge/schema/*": ["../../packages/schema/src/*"],
+      "@webforge/block-registry": ["../../packages/block-registry/src/index.ts"],
+      "@webforge/block-registry/*": ["../../packages/block-registry/src/*"]
+    }
+  },
+  "include": ["src/**/*", "vite.config.ts"]
+}

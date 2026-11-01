@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@webforge/schema": ["src/modules/webbuilder/packages/schema/src"],
+      "@webforge/design-system": ["src/modules/webbuilder/packages/design-system/src"],
+      "@webforge/editor-core": ["src/modules/webbuilder/packages/editor-core/src"],
+      "@webforge/block-registry": ["src/modules/webbuilder/packages/block-registry/src"],
+      "@webforge/template-registry": ["src/modules/webbuilder/packages/template-registry/src"],
+      "@webforge/backend-adapters": ["src/modules/webbuilder/packages/backend-adapters/src"],
+      "@webforge/codegen": ["src/modules/webbuilder/packages/codegen/src"],
+      "@webforge/integrations": ["src/modules/webbuilder/packages/integrations/src"]
+    }
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", "src/**/test/**", "src/**/*.test.*", "src/**/*.spec.*"]
+}

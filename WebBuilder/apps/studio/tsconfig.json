@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@webforge/schema": ["../../packages/schema/src/index.ts"],
+      "@webforge/schema/*": ["../../packages/schema/src/*"],
+      "@webforge/design-system": ["../../packages/design-system/src/index.ts"],
+      "@webforge/design-system/*": ["../../packages/design-system/src/*"],
+      "@webforge/editor-core": ["../../packages/editor-core/src/index.ts"],
+      "@webforge/editor-core/*": ["../../packages/editor-core/src/*"],
+      "@webforge/block-registry": ["../../packages/block-registry/src/index.ts"],
+      "@webforge/block-registry/*": ["../../packages/block-registry/src/*"],
+      "@webforge/template-registry": ["../../packages/template-registry/src/index.ts"],
+      "@webforge/template-registry/*": ["../../packages/template-registry/src/*"],
+      "@webforge/backend-adapters": ["../../packages/backend-adapters/src/index.ts"],
+      "@webforge/backend-adapters/*": ["../../packages/backend-adapters/src/*"],
+      "@webforge/codegen": ["../../packages/codegen/src/index.ts"],
+      "@webforge/codegen/*": ["../../packages/codegen/src/*"],
+      "@webforge/integrations": ["../../packages/integrations/src/index.ts"],
+      "@webforge/integrations/*": ["../../packages/integrations/src/*"],
+      "@webforge/testing": ["../../packages/testing/src/index.ts"],
+      "@webforge/testing/*": ["../../packages/testing/src/*"]
+    }
+  },
+  "include": ["src/**/*", "vite.config.ts"]
+}

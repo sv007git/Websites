@@ -1,0 +1,469 @@
+================================================================================
+                    ANTIGRAVITY PROJECT CONTEXT & PROMPT
+                 NCERT Cartoon Academy (Class 1 to 12)
+================================================================================
+PROJECT ID: Study
+REPOSITORY: https://github.com/sv007git/Study
+LIVE SITE:  https://sv007git.github.io/Study/
+TARGET USER: Parents and Students (Class 1 to 12, NCERT English Medium)
+AESTHETIC:   Black & White Comic / Manga Theme (High Contrast, Halftone Ink)
+AUDIO:       Web Speech API (English TTS) + Web Audio API Procedural SFX
+ARCHITECTURE: Pure Vanilla ES6+ Web Standards (Zero-build static frontend)
+================================================================================
+
+1. EXECUTIVE SUMMARY & PURPOSE
+--------------------------------------------------------------------------------
+This platform makes the entire CBSE / NCERT English Medium curriculum from
+Class 1 to 12 intuitive, joyful, and memorable by converting academic textbook
+chapters into character-driven cartoon comic strips, hands-on interactive labs,
+spoken English audio narrations, and checkpoint quizzes.
+
+Key Tenets:
+1. Pure Black & White Comic Strip Aesthetic:
+   - High contrast (#000000 on #ffffff) with comic printing halftone dots.
+   - Neobrutalist 3D ink shadows (4px 4px 0px #000), bold panel borders.
+   - Expressive speech bubbles with directional pointers.
+   - Inverted Noir Manga Mode toggle for nighttime reading.
+   - Scalable inline vector (SVG) artwork that prints crisply on any printer.
+2. English Voice Speech Narration:
+   - Built-in Web Speech API Text-to-Speech (TTS) reading panels in English.
+   - Distinct character pitch/speed profiles (Prof. Paws, Pixel Bot, Sparky, etc.).
+   - Sequential "Read Entire Comic Aloud" mode with active panel tracking.
+   - 100% procedural Web Audio API cartoon sound effects (boing, pop, fanfare,
+     buzzer, page flip) with zero external MP3 assets.
+3. Class 1 to 12 NCERT Scope:
+   - Categorized into 5 stages: Foundational (1-2), Preparatory (3-5),
+     Middle School (6-8), Secondary (9-10), Senior Secondary (11-12).
+   - Covers Mathematics, Science (Physics/Chemistry/Biology), Social Science,
+     and English.
+4. Tactile Mini-Labs:
+   - Interactive, formula-driven simulators (e.g., F = ma cart, Ohm's law,
+     Photosynthesis engine, Pizza fraction slicer).
+5. Parent-Child Bonding:
+   - Parent Learning Hub with dinner-table conversation prompts.
+   - Progress and badge tracking saved in browser localStorage.
+   - Printable Black & White Cartoon Certificate of Achievement.
+
+
+================================================================================
+2. COMPLETE FILE TREE & DESCRIPTIONS
+================================================================================
+Study/
+├── index.html                   # Single-Page Web App entry point & shell
+├── favicon.svg                  # B&W vector cartoon cat scientist icon (64x64)
+├── manifest.json                # PWA manifest for tablet/mobile installability
+├── README.md                    # Public documentation and parent guide
+├── antigravity_prompt.txt       # THIS FILE: Single source of truth context prompt
+├── css/
+│   ├── main.css                 # Base resets, variables, layout grid, header, nav
+│   ├── comic-theme.css          # B&W comic styles, buttons, bubbles, labs, quiz, cert
+│   └── animations.css           # Comic pop, bounce, electron flow, reading glow
+└── js/
+    ├── app.js                   # Main application router, search, class picker
+    ├── audio-narrator.js        # Web Speech API TTS + Web Audio procedural SFX
+    ├── ncert-curriculum.js      # Complete NCERT Class 1-12 curriculum catalog
+    ├── comic-stories.js         # Multi-panel cartoon comic stories & SVG artwork
+    ├── interactive-labs.js      # 6 hands-on cartoon simulators & physics widgets
+    ├── quiz-engine.js           # Interactive MCQ checkpoint engine with audio
+    ├── parent-dashboard.js      # Progress tracker, badges, dinner prompts, cert
+    └── comic-renderer.js        # Panel layout, speech bubble renderer, auto-reader
+
+
+================================================================================
+3. MODULES, APIS & DATA SCHEMAS
+================================================================================
+
+--------------------------------------------------------------------------------
+A. AUDIO NARRATOR ENGINE (`js/audio-narrator.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.audioNarrator`
+Class: `AudioNarrator`
+
+State & Properties:
+- `synth`: `window.speechSynthesis`
+- `audioCtx`: `AudioContext` (initialized/resumed on user gesture)
+- `voices`: Filtered list of English voices (`en-US`, `en-GB`, `en-IN`, etc.)
+- `selectedVoice`: Active SpeechSynthesisVoice object
+- `rate`: Speech speed multiplier (default: 1.0, range: 0.6 to 1.6)
+- `pitch`: Pitch multiplier (default: 1.0)
+- `isMuted`: Boolean flag controlling both speech and sound FX
+
+Character Voice Profiles (`characterProfiles`):
+- `narrator`:   { pitch: 1.00, rate: 0.95, prefix: "" }
+- `prof-paws`:  { pitch: 0.85, rate: 0.92, prefix: "Professor Paws says: " }
+- `pixel-bot`:  { pitch: 1.35, rate: 1.05, prefix: "Pixel says: " }
+- `luna-owl`:   { pitch: 0.95, rate: 0.88, prefix: "Luna explains: " }
+- `sparky`:     { pitch: 1.40, rate: 1.10, prefix: "Sparky exclaims: " }
+- `doodler`:    { pitch: 1.10, rate: 1.00, prefix: "Doodler notes: " }
+
+Primary Methods:
+- `speak(text, options = { character, onStart, onEnd, onError })`:
+  Stops current utterance, cleans tags, applies character profile, speaks English.
+- `stop()`: Halts speech synthesis and cancels auto-read timer.
+- `pause()`, `resume()`, `toggleMute()`.
+- `setVoice(voiceURI)`, `setSpeed(speedVal)`, `getEnglishVoices()`.
+- `startComicAutoNarrate(panels, onPanelStart(index, item), onFinish())`:
+  Sequentially plays through panels, triggers highlights, pauses 900ms between panels.
+
+Procedural Web Audio SFX Methods (Zero external MP3 dependencies!):
+- `playPop()`: 350Hz -> 800Hz sine burst (0.08s) for UI taps.
+- `playBoing()`: 220Hz -> 540Hz -> 320Hz sine with tremolo (0.35s) for comic springs.
+- `playSuccess()`: 4-note arpeggio (C5, E5, G5, C6) with triangle waves for rewards.
+- `playBuzzer()`: 140Hz -> 95Hz sawtooth drop (0.25s) for quiz errors.
+- `playPageFlip()`: Filtered white-noise burst (1200Hz bandpass, 0.06s) for comic rustle.
+- `playClick()`: Subtle tick for buttons.
+
+--------------------------------------------------------------------------------
+B. NCERT CURRICULUM DATABASE (`js/ncert-curriculum.js`)
+--------------------------------------------------------------------------------
+Global constant: `window.NCERT_DATA`
+
+Structure:
+```javascript
+{
+  stages: [
+    { id: "foundational", name: "Foundational Stage", classes: [1, 2], ... },
+    { id: "preparatory",  name: "Preparatory Stage",  classes: [3, 4, 5], ... },
+    { id: "middle",       name: "Middle School Stage",classes: [6, 7, 8], ... },
+    { id: "secondary",    name: "Secondary Stage",    classes: [9, 10], ... },
+    { id: "senior",       name: "Senior Secondary",   classes: [11, 12], ... }
+  ],
+  classes: {
+    1: {
+      title: "Class 1: Little Explorers",
+      tagline: "Joyful doodles, shapes, animal buddies, and fun sounds!",
+      stage: "foundational",
+      subjects: [
+        {
+          id: "c1-math",
+          name: "Mathematics (Joyful Math)",
+          icon: "🔢",
+          badge: "Math Magic",
+          desc: "Shapes, counting monsters, finding things inside-outside...",
+          chapters: [
+            {
+              id: "c1-m1",
+              title: "Shapes & Space: Bigger, Smaller & Inside Out",
+              comicId: "c1-math-shapes",
+              concept: "Spatial awareness, geometric shapes (circle, triangle, square)",
+              cartoonHook: "Pixel Bot tries to pack square toys into round comic boxes!"
+            },
+            ...
+          ]
+        },
+        ...
+      ]
+    },
+    // Classes 1 through 12 fully mapped
+  }
+}
+```
+
+--------------------------------------------------------------------------------
+C. COMIC STORIES DATABASE (`js/comic-stories.js`)
+--------------------------------------------------------------------------------
+Global constant: `window.COMIC_STORIES`
+
+Story Schema:
+```javascript
+COMIC_STORIES["story-id"] = {
+  id: "c1-math-shapes",
+  classNum: 1,
+  subjectId: "c1-math",
+  title: "Shapes & Space: The Square Toy in the Round Hole!",
+  subtitle: "Circles roll, squares slide, and triangles point to the sky!",
+  concept: "Circles have no corners, squares have 4 equal sides...",
+  characters: ["prof-paws", "pixel-bot"],
+  interactiveLabId: "shape-sorter", // Links to InteractiveLabs widget
+  panels: [
+    {
+      panelNum: 1,
+      speaker: "Professor Paws",
+      characterKey: "prof-paws",
+      soundEffect: "CLATTER!",
+      narration: "In the cartoon workshop, Pixel is packing toys.",
+      dialogue: "Pixel, watch out! Why are you trying to push that square box...?",
+      svgArt: `<svg viewBox="0 0 400 240" class="comic-svg">...</svg>`
+    },
+    ...
+  ],
+  takeaway: "NCERT Takeaway: Round objects roll easily because...",
+  quiz: [
+    {
+      question: "How many corners does a round circle have?",
+      options: ["0 corners", "3 corners", "4 corners", "10 corners"],
+      correctIndex: 0,
+      explanation: "Circles have zero corners and zero straight sides!"
+    },
+    ...
+  ]
+};
+```
+
+Available Comic Story Keys:
+- `c1-math-shapes`: Class 1 Math (Shapes & Space)
+- `c3-evs-plantfairy`: Class 3 EVS (Photosynthesis & Leaf Kitchen)
+- `c5-math-fractions`: Class 5 Math (Pizza Monster Fractions)
+- `c6-sci-circuits`: Class 6 Science (Electricity & Closed Circuits)
+- `c9-sci-motion`: Class 9 Science (Newton's 3 Laws of Motion)
+- `c10-sci-electricity`: Class 10 Science (Ohm's Law: V = IR)
+- `c11-phy-vectors`: Class 11 Physics (Vectors & Projectile Parabola)
+- `c12-phy-faraday`: Class 12 Physics (Faraday & Lenz's Induction)
+
+--------------------------------------------------------------------------------
+D. INTERACTIVE MINI-LABS (`js/interactive-labs.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.interactiveLabs`
+Class: `InteractiveLabs`
+
+Method: `renderLab(labId, mountElement)`
+Renders tactile, black-and-white, SVG/HTML5 interactive simulators into any container.
+
+Available Mini-Labs:
+1. `shape-sorter` (Class 1-2):
+   - Click shapes (Circle, Square, Triangle) and test fitting them into garage slots.
+   - Dynamic feedback with sound effects (Success chime vs Buzzer boing).
+2. `photosynthesis-lab` (Class 3-7):
+   - Sliders for Sunlight Intensity, Water from Roots, and CO2 in air.
+   - Demonstrates Blackman's law of limiting factors: Glucose & O2 meters clamp
+     to the lowest ingredient.
+3. `pizza-fraction-lab` (Class 3-5):
+   - Interactive SVG pizza divided into 2, 4, 6, or 8 slices.
+   - Click slices to eat them; updates live fraction (a/b), remaining slices,
+     percentage, and equivalent fractions (4/8 = 1/2).
+4. `circuit-builder` (Class 6-8):
+   - Toggle knife switch ON/OFF; adjust battery voltage (1.5V to 9.0V).
+   - Test materials: Conductors (Copper wire, Iron nail) vs Insulators (Rubber,
+     Wood, Plastic). Bulb filaments glow with animated electron flow lines.
+5. `newtons-cart` (Class 9-11):
+   - Physics cart simulator testing F = ma.
+   - Select mass (1kg, 2kg, 5kg, 10kg), set push force slider (5N to 50N).
+   - Hit "LAUNCH CART!" to trigger physics animation with duration proportional
+     to calculated acceleration a = F/m.
+6. `ohms-law-lab` (Class 10-12):
+   - Ohm's law triangle (V = I * R).
+   - Manipulate Voltage (1V-24V) and Resistance (1Ω-24Ω) to watch Ampere meter
+     and flow intensity calculate in real time.
+
+--------------------------------------------------------------------------------
+E. QUIZ CHECKPOINT ENGINE (`js/quiz-engine.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.quizEngine`
+Class: `QuizEngine`
+
+Method: `loadQuiz(quizQuestions, storyId, mountElement)`
+Features:
+- Spoken English audio button ("Listen to Question") using `audioNarrator`.
+- 4 multiple-choice options with keyboard-friendly letter badges (A, B, C, D).
+- Immediate auditory feedback: `playSuccess()` vs `playBuzzer()`.
+- Instant explanation cards explaining the NCERT reasoning.
+- Score calculation and auto-recording into `window.parentDashboard`.
+- Replay and View Progress actions on completion.
+
+--------------------------------------------------------------------------------
+F. PARENT & KID LEARNING HUB (`js/parent-dashboard.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.parentDashboard`
+Class: `ParentDashboard`
+
+LocalStorage Key: `"ncert_comic_study_progress"`
+Data Schema:
+```javascript
+{
+  studentName: "Young Scholar",
+  grade: 5,
+  completedStories: ["c1-math-shapes", ...],
+  quizScores: {
+    "c1-math-shapes": { score: 2, total: 2 },
+    ...
+  },
+  stars: 18,
+  minutesLearned: 45,
+  badges: ["first-comic", "plant-whisperer", "electrician", ...]
+}
+```
+
+Features:
+- Student name editor (persists to localStorage).
+- Metrics grid: Stars Earned, Chapters Mastered, Study Time, Badges Unlocked.
+- Badges Catalog: First Issue Reader, Plant Whisperer, Circuit Spark,
+  Newton's Apprentice, NCERT Comic Master.
+- Dinner-Table Conversation Prompts: Categorized questions parents can ask
+  kids after dinner to reinforce today's comic without feeling like a test.
+- Printable Achievement Certificate: Personalized Black & White diploma
+  featuring child's name, official academy seal, and signatures of
+  Professor Paws and Pixel Bot. Clean `@media print` styling included.
+
+--------------------------------------------------------------------------------
+G. COMIC RENDERER (`js/comic-renderer.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.comicRenderer`
+Class: `ComicRenderer`
+
+Method: `renderStory(story, container)`
+Features:
+- Renders Sunday comic strip panel grid (2 columns on desktop, 1 on mobile).
+- Panel numbering, onomatopoeia sound bursts ("POW!", "ZAP!"), caption boxes.
+- Character speech bubbles with CSS pointer tails (`.bubble-left`, `.bubble-right`).
+- Audio narration bar with Speed selector (0.8x, 1.0x, 1.2x) and English voice picker.
+- "Read Entire Comic Aloud" button with automatic panel scroll and pulse animation.
+- Individual "🔊 Listen" button on every panel.
+- Collapsible inline drawers for Hands-on Mini-Lab and Chapter Quiz.
+
+--------------------------------------------------------------------------------
+H. MAIN CONTROLLER & ROUTER (`js/app.js`)
+--------------------------------------------------------------------------------
+Global instance: `window.studyApp`
+Class: `StudyApp`
+
+Views:
+- `browse`: Class selector strip (1 to 12) + search input + subject/chapter cards.
+- `reader`: Comic strip reader view for the active story.
+- `labs`: Interactive Mini-Labs Gallery with launcher cards.
+- `dashboard`: Parent & Kid Learning Hub mount.
+- `about`: Pedagogical rationale, parent guide, GitHub Pages repository info.
+
+Key Handlers:
+- Class picker tabs: Updates active class (1-12) and re-renders subjects.
+- Search input: Real-time fuzzy filtering across chapter titles, concepts, hooks.
+- Theme toggle: Toggles `noir-theme` class on `document.body`.
+- Audio toggle: Mutes/unmutes procedural sound effects and speech.
+- Voice test button: Speaks introductory welcome message in English.
+
+
+================================================================================
+4. UI & DESIGN SYSTEM SPECIFICATIONS
+================================================================================
+CSS Files:
+1. `css/main.css`:
+   - Design tokens (`--bg-primary`, `--text-primary`, `--ink-border`, `--box-shadow`).
+   - Comic typography pairing:
+     * Headings: 'Bangers', cursive, Impact, Arial Black
+     * Comic Speech: 'Comic Neue', 'Patrick Hand', Comic Sans MS, cursive
+     * Body Text: system-ui, -apple-system, sans-serif
+   - Halftone background: `radial-gradient(var(--text-muted) 0.75px, transparent 0.75px) 24px 24px`.
+   - Responsive layout wrappers, sticky navigation header, footer.
+2. `css/comic-theme.css`:
+   - Neobrutalist comic buttons (`.comic-btn`) with 4px border & solid drop shadow.
+   - Sunday comic strip panels (`.comic-panel-box`).
+   - Speech bubbles with directional pseudo-borders (`.comic-speech-bubble`, `.bubble-tail`).
+   - Interactive lab controls, sliders, meter bars, pizza SVGs.
+   - Quiz option buttons (`.comic-option-btn`), correct/wrong state styling.
+   - Parent dashboard cards, badge grids, print certificate styles (`@media print`).
+3. `css/animations.css`:
+   - `.panel-reading-now`: Keyframe pulse highlighting current reading panel.
+   - `.electron-flow-anim`: Dashed stroke animation for circuit wires.
+   - `.comic-pop-text`: 0.3s scale pop animation.
+   - `@keyframes shake`: Tactile shake animation for wrong garage slot attempts.
+
+
+================================================================================
+5. HOW TO EXTEND THE PROJECT (RECIPES FOR FUTURE AGENTS)
+================================================================================
+
+RECIPE 1: HOW TO ADD A NEW CHAPTER TO A SUBJECT
+--------------------------------------------------------------------------------
+1. Open `js/ncert-curriculum.js`.
+2. Locate the desired class in `NCERT_DATA.classes[classNumber]`.
+3. Locate the subject in `subjects` array (e.g., `c7-sci`).
+4. Append a new chapter object to `chapters`:
+   ```javascript
+   {
+     id: "c7-s4",
+     title: "Motion and Time: The Oscillating Simple Pendulum",
+     comicId: "c7-sci-pendulum",
+     concept: "Periodic motion, time period of simple pendulum T = 2π√(L/g)",
+     cartoonHook: "Pixel the robot builds a grandfather clock with a swinging cat toy!"
+   }
+   ```
+
+RECIPE 2: HOW TO ADD A NEW CARTOON COMIC STRIP
+--------------------------------------------------------------------------------
+1. Open `js/comic-stories.js`.
+2. Add a new story key matching the `comicId` above:
+   ```javascript
+   "c7-sci-pendulum": {
+     id: "c7-sci-pendulum",
+     classNum: 7,
+     subjectId: "c7-sci",
+     title: "Motion and Time: The Swinging Comic Pendulum!",
+     subtitle: "Back and forth with constant rhythm: The secret of clocks!",
+     concept: "A simple pendulum executes periodic motion. Time period depends on string length.",
+     characters: ["prof-paws", "pixel-bot"],
+     interactiveLabId: null, // or add a lab ID
+     panels: [
+       {
+         panelNum: 1,
+         speaker: "Pixel Bot",
+         characterKey: "pixel-bot",
+         soundEffect: "TICK-TOCK!",
+         narration: "In the antique clock shop...",
+         dialogue: "Professor! Why does this swinging bob take the exact same time on every swing?",
+         svgArt: `<svg viewBox="0 0 400 240" class="comic-svg">
+           <rect x="20" y="20" width="360" height="200" fill="#fff" stroke="#000" stroke-width="4"/>
+           <line x1="200" y1="40" x2="160" y2="160" stroke="#000" stroke-width="3"/>
+           <circle cx="160" cy="160" r="16" fill="#000"/>
+           <text x="200" y="210" text-anchor="middle" font-weight="bold" font-size="14">PERIODIC MOTION</text>
+         </svg>`
+       },
+       // Add panels 2, 3, 4...
+     ],
+     takeaway: "NCERT Takeaway: The time taken by a pendulum to complete one oscillation is its time period.",
+     quiz: [
+       {
+         question: "What happens to the time period of a pendulum if you make the string longer?",
+         options: ["Time period increases (swings slower)", "Time period decreases", "It stops swinging", "It spins in a circle"],
+         correctIndex: 0,
+         explanation: "A longer string has a greater time period, so it swings more slowly!"
+       }
+     ]
+   }
+   ```
+
+RECIPE 3: HOW TO ADD A NEW INTERACTIVE MINI-LAB
+--------------------------------------------------------------------------------
+1. Open `js/interactive-labs.js`.
+2. In `renderLab(labId, mountElement)`, add a new case to the switch:
+   ```javascript
+   case "pendulum-lab":
+     this.renderPendulumLab();
+     break;
+   ```
+3. Implement `renderPendulumLab()` with DOM controls, SVG visualizer, sound FX,
+   and narration feedback.
+4. Add the lab metadata into the gallery list in `js/app.js` (`renderLabsGallery`).
+
+RECIPE 4: HOW TO DEPLOY TO GITHUB PAGES
+--------------------------------------------------------------------------------
+The project is hosted on GitHub Pages:
+- Repository: `https://github.com/sv007git/Study`
+- Branches: `main` (source) and `gh-pages` (deployment branch).
+- To sync updates:
+  ```bash
+  git add .
+  git commit -m "feat: your new feature"
+  git push origin main
+  git checkout gh-pages
+  git merge main
+  git push origin gh-pages
+  git checkout main
+  ```
+- GitHub automatically triggers the official `pages build and deployment` action.
+- Live site: `https://sv007git.github.io/Study/`
+
+
+================================================================================
+6. WHY THIS PROMPT SAVES TOKENS FOR FUTURE AGENTS
+================================================================================
+A fresh Antigravity agent or developer does NOT need to execute multiple
+read_file or search_files operations to understand this project. Reading this
+single file provides:
+1. Complete understanding of the architecture, tech choices, and UX requirements.
+2. Exact method signatures and property names for every global module.
+3. Full data schemas for curriculum, comic stories, mini-labs, and quizzes.
+4. Copy-paste extension templates for adding new content.
+5. All deployment, branch, and configuration requirements.
+
+================================================================================
+END OF ANTIGRAVITY PROJECT PROMPT
+================================================================================

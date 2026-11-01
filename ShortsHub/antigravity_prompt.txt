@@ -1,0 +1,266 @@
+================================================================================
+# ANTIGRAVITY MASTER PROJECT CONTEXT: SHORTSHUB
+# Curated Tamil, English & Telugu YouTube Shorts Player & Daily Collector
+================================================================================
+
+[PROJECT OVERVIEW]
+Project Name: ShortsHub
+Repository: https://github.com/sv007git/ShortsHub
+Live URL: https://sv007git.github.io/ShortsHub/
+Primary Target: Android Mobile Phones (PWA & Mobile Web)
+Secondary Targets: Desktop Browsers (Chrome, Firefox, Edge, Safari), Tablets
+
+ShortsHub is an installable, mobile-first Progressive Web App (PWA) that plays curated
+vertical YouTube Shorts strictly in Tamil, English, and Telugu across 4 family-friendly
+categories. It automatically captures every played video into a local daily watchlist
+for batch exporting and manual downloading via SnapTube.
+
+================================================================================
+[CORE CONSTRAINTS & BUSINESS RULES - NEVER VIOLATE]
+================================================================================
+1. THREE LANGUAGES ONLY:
+   - Tamil (தமிழ்)
+   - English (English)
+   - Telugu (తెలుగు)
+   * Users can select any combination (e.g., Tamil only, Tamil + English, All 3).
+   * Videos from unselected languages must never appear.
+
+2. STRICT CATEGORY RESTRICTIONS (ABSOLUTE PROHIBITION):
+   - ONLY 4 MAIN CATEGORIES ALLOWED:
+     1. Education (கல்வி / విద్య)
+     2. Fun and Entertainment (நகைச்சுவை / వినోదం)
+     3. Family (குடும்பம் / కుటుంబం)
+     4. Friends and Lifestyle (நட்பு / జీవనశైలి)
+   - ABSOLUTELY NO GAMES SECTION.
+   - ABSOLUTELY NO TECHNOLOGY SECTION.
+   - Do NOT create gaming or tech categories, tags, subcategories, filters, or recommendations.
+
+3. ZERO ACCOUNTS / ZERO BACKEND DEPENDENCY:
+   - No Google Sign-In.
+   - No authentication or registration wall.
+   - 100% on-device privacy: All watch records, custom playlists, favorites, and settings
+     persist client-side in IndexedDB (via Dexie.js).
+
+4. SNAPTUBE WORKFLOW & YOUTUBE API COMPLIANCE:
+   - ShortsHub DOES NOT scrape YouTube or execute automatic video downloading.
+   - It collects verified video URLs as the user watches throughout the day.
+   - At the end of the day, users open "Daily Watchlist" to export/share URLs:
+     * TXT: One URL per line (ShortsHub_YYYY-MM-DD.txt)
+     * M3U: Audio/Video playlist format (ShortsHub_YYYY-MM-DD.m3u)
+     * CSV: Spreadsheet with metadata & URLs (ShortsHub_YYYY-MM-DD.csv)
+     * JSON: Full structured schema (ShortsHub_YYYY-MM-DD.json)
+     * Web Share API (navigator.share) to send directly to SnapTube in Android Sharesheet.
+     * Clipboard fallback with auto-detect toast notification.
+   - SnapTube recommended download destination: "Internal Storage/Download/YTD/"
+
+================================================================================
+[COMPLETE DIRECTORY & FILE STRUCTURE]
+================================================================================
+ShortsHub/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml               # Automated CI/CD deploying to GitHub Pages
+├── assets/                          # Production compiled JS & CSS bundle committed for direct Pages serving
+│   ├── index.js                     # 375 kB compiled React + Dexie + Tailwind app bundle
+│   └── index.css                    # 40 kB compiled Tailwind stylesheet
+├── public/
+│   ├── icons/
+│   │   ├── icon.svg                 # High-resolution vector logo
+│   │   ├── icon-192.png             # 192x192 PWA icon
+│   │   ├── icon-512.png             # 512x512 PWA icon
+│   │   └── icon-maskable-512.png    # 512x512 maskable PWA icon
+│   ├── 404.html                     # SPA redirect fallback for GitHub Pages routing
+│   └── favicon.ico                  # 48x48 browser favicon
+├── scripts/
+│   ├── generate-icons.js            # Pure Node.js script generating PNG icons with zlib
+│   ├── prebuild.js                  # Prepares index.html from index.dev.html before Vite runs
+│   └── postbuild.js                 # Copies dist/ assets and index.html to root for direct branch serving
+├── src/
+│   ├── components/
+│   │   ├── BottomNavigation/
+│   │   │   └── BottomNavigation.tsx # 5-tab persistent bottom bar with active counter badge
+│   │   ├── ContentEditor/
+│   │   │   └── ContentEditorModal.tsx # Curator tool: Add video IDs, tags, JSON import/export
+│   │   ├── DailyWatchlist/
+│   │   │   └── SnapTubeGuideModal.tsx # Step-by-step SnapTube manual download guide modal
+│   │   ├── LanguageSelector/
+│   │   │   └── LanguageModal.tsx    # 3-language onboarding & switcher modal
+│   │   ├── ShortsPlayer/
+│   │   │   └── ShortsPlayer.tsx     # Fullscreen 9:16 vertical player with gestures & error recovery
+│   │   └── VideoCard/
+│   │       └── VideoCard.tsx        # 9:16 aspect video thumbnail preview card
+│   ├── database/
+│   │   ├── categories.json          # Strict 4 categories & subcategories metadata (NO Games/Tech)
+│   │   └── curated-videos.json      # 40+ curated Tamil, English & Telugu Shorts database
+│   ├── pages/
+│   │   ├── Categories/
+│   │   │   └── CategoriesPage.tsx   # Category browser with subtopic explorer
+│   │   ├── DailyWatchlist/
+│   │   │   └── DailyWatchlistPage.tsx # Today's Shorts, stats, multi-select, and SnapTube exports
+│   │   ├── Explore/
+│   │   │   └── ExplorePage.tsx      # Real-time search, language chips, and category filter
+│   │   ├── Home/
+│   │   │   └── HomePage.tsx         # Daily counter banner, category pills, For You & topic feeds
+│   │   └── Library/
+│   │       └── LibraryPage.tsx      # Favorites, custom playlists, history, backup, reminder settings
+│   ├── services/
+│   │   ├── discovery/
+│   │   │   └── discoveryEngine.ts   # Language/category sanitizer, search, and recommendation engine
+│   │   ├── sharing/
+│   │   │   └── exportService.ts     # Generates TXT, M3U, CSV, JSON files & triggers navigator.share
+│   │   ├── storage/
+│   │   │   └── db.ts                # Dexie IndexedDB tables, auto-capture & duplicate management
+│   │   └── youtube/
+│   │       └── youtubeApi.ts        # Official YouTube IFrame Player API loader
+│   ├── test/
+│   │   ├── app.test.tsx             # Root App mount & render test
+│   │   ├── components.test.tsx      # UI components (modal, nav, cards, guide) tests
+│   │   ├── discovery.test.ts        # 3-language filter & strict No-Games/No-Tech test
+│   │   ├── export.test.ts           # SnapTube TXT, M3U, CSV, JSON export format tests
+│   │   ├── setup.ts                 # Vitest jsdom setup with fake-indexeddb
+│   │   └── storage.test.ts          # IndexedDB persistence, duplicate handling & backup tests
+│   ├── types/
+│   │   └── index.ts                 # TypeScript data contracts & interfaces
+│   ├── App.tsx                      # Root application state & coordinator
+│   ├── index.css                    # Tailwind directives & mobile safe-area classes
+│   └── main.tsx                     # React 18 DOM root render
+├── 404.html                         # SPA 404 fallback committed to root
+├── index.dev.html                   # Development template pointing to /src/main.tsx
+├── index.html                       # Production entry pointing to /ShortsHub/assets/index.js
+├── manifest.webmanifest             # PWA Web App Manifest
+├── package.json                     # NPM dependencies, Vitest config, and build hooks
+├── postcss.config.js                # PostCSS with Tailwind & Autoprefixer
+├── registerSW.js                    # Service worker registration script
+├── sw.js                            # PWA Workbox service worker for offline shell caching
+├── tailwind.config.js               # Dark mode color palette, 9:16 aspect ratio, custom keyframes
+├── tsconfig.json                    # TypeScript compiler options (bundler mode)
+├── vite.config.ts                   # Base '/ShortsHub/', PWA plugin, Vitest configuration
+└── workbox-6c06881d.js              # Workbox runtime caching engine
+
+================================================================================
+[DATA MODELS & INDEXEDDB SCHEMA (Dexie.js)]
+================================================================================
+Database Name: 'ShortsHubDB' (Version 1)
+
+1. viewedShorts: '++id, videoId, dateViewed, lastViewedAt, language, category, [dateViewed+videoId]'
+   - id: Auto-increment primary key
+   - videoId: YouTube video identifier (e.g. 'k4H7E_y8l3w')
+   - originalUrl: Direct shorts link ('https://www.youtube.com/shorts/{videoId}')
+   - title: Video title
+   - thumbnailUrl: HQ YouTube thumbnail
+   - channelName: Creator channel name
+   - language: 'Tamil' | 'English' | 'Telugu'
+   - category: 'Education' | 'Fun and Entertainment' | 'Family' | 'Friends and Lifestyle'
+   - subcategory: Specific subtopic (e.g. 'Science', 'Recipes', 'Motivation')
+   - dateViewed: Local device date formatted as 'YYYY-MM-DD'
+   - timeViewed: Local time 'HH:mm:ss'
+   - firstViewedAt: Epoch timestamp of initial view
+   - lastViewedAt: Epoch timestamp of latest view
+   - watchDurationSeconds: Number of seconds watched
+   - completed: Boolean (true if watched to completion)
+   - viewCount: Number of times watched today
+
+   * Duplicate Management Rule:
+     If a video is viewed multiple times on the same date:
+     - Maintains 1 record by default (composite index [dateViewed+videoId]).
+     - Increments viewCount.
+     - Updates lastViewedAt and timeViewed.
+     - Preserves original firstViewedAt.
+     - Optional toggle in Settings allows recording separate sessions if desired.
+
+2. favorites: 'videoId, addedAt'
+   - Keeps track of liked/favorited videos.
+
+3. customPlaylists: 'id, title, updatedAt'
+   - User-created playlist bundles (e.g. "My Learning Shorts", "Tamil Comedy").
+
+4. preferences: 'key'
+   - Stores UserPreferences (selectedLanguages, theme, reminderTime, autoPlayNext, etc.).
+
+5. customVideos: 'id, videoId, language, category, isApproved'
+   - User-added curated Shorts imported or created via the Content Editor modal.
+
+================================================================================
+[SHORTS PLAYER SPECIFICATIONS]
+================================================================================
+Component: src/components/ShortsPlayer/ShortsPlayer.tsx
+- 9:16 Presentation: Centered vertical layout simulating YouTube Shorts / TikTok reels.
+- YouTube API: Uses window.YT.Player. Only 1 player active at any time.
+- Swipe Gestures:
+  * Swipe Up (> 55px deltaY): Advance to Next video.
+  * Swipe Down (< -55px deltaY): Return to Previous video.
+  * Keyboard: ArrowUp / ArrowDown / 'j' / 'k' navigation.
+  * Single Tap: Toggle Play / Pause.
+  * Double Tap: Heart burst animation + toggle Favorite.
+- Auto-Capture Trigger:
+  * Listens to onStateChange event.
+  * When event.data === 1 (YT.PlayerState.PLAYING), immediately calls recordViewedShort().
+- Robust Error Handling:
+  * Error codes 101 / 150 (creator disabled embedding) or 100 (private/removed):
+    Displays graceful card explaining the restriction, with a direct button to
+    "Open in YouTube App / Web" and "Skip to Next Video". Never fakes playback.
+
+================================================================================
+[SNAPTUBE DOWNLOAD & EXPORT SPECIFICATIONS]
+================================================================================
+Component: src/pages/DailyWatchlist/DailyWatchlistPage.tsx
+Service: src/services/sharing/exportService.ts
+
+Export Filename Conventions:
+- ShortsHub_YYYY-MM-DD.txt : One video URL per line
+- ShortsHub_YYYY-MM-DD.m3u : Standard media playlist (#EXTM3U + #EXTINF:-1,Title - Channel)
+- ShortsHub_YYYY-MM-DD.csv : CSV with Date, Time, Title, Language, Category, Channel, URL
+- ShortsHub_YYYY-MM-DD.json: Complete JSON payload with all metadata
+
+Sharing Protocol:
+1. User clicks "Share to SnapTube":
+   - Calls navigator.share({ title, text: urls.join('\n') }).
+   - Launches native Android Sharesheet where user selects SnapTube.
+2. User clicks "Copy URLs":
+   - Copies newline-separated URLs to clipboard.
+   - SnapTube detects clipboard links upon launch and prompts download.
+3. Destination Guidance:
+   - Built-in SnapTube Guide modal instructs user to configure destination folder:
+     "Internal Storage/Download/YTD/"
+
+================================================================================
+[DEPLOYMENT & HOSTING ARCHITECTURE]
+================================================================================
+Hosting Platform: GitHub Pages (URL: https://sv007git.github.io/ShortsHub/)
+Base Path: '/ShortsHub/' in vite.config.ts
+
+Dual-Support Deployment Strategy:
+1. GitHub Actions CI/CD (.github/workflows/deploy.yml):
+   - Runs npm ci, npm run test, and npm run build.
+   - Deploys build artifact to GitHub Pages via actions/deploy-pages@v4.
+   - Also pushes to gh-pages branch via peaceiris/actions-gh-pages@v4.
+2. Direct Root Branch Serving Support:
+   - scripts/postbuild.js copies compiled assets/index.js, assets/index.css,
+     manifest, and SW to root, and updates root index.html to load /ShortsHub/assets/index.js.
+   - Works immediately even if GitHub Pages is set to "Deploy from branch: main / (root)".
+
+================================================================================
+[TESTING SUITE & ACCEPTANCE STATUS]
+================================================================================
+Test Runner: Vitest v3 with @testing-library/react and fake-indexeddb
+Run Command: npm run test
+
+Passes 19/19 Tests Across 5 Test Suites:
+✓ src/test/discovery.test.ts  - Verifies 3 languages, category filter, strictly NO Games & NO Tech
+✓ src/test/storage.test.ts    - Verifies IndexedDB storage, duplicate handling, and JSON backup/restore
+✓ src/test/export.test.ts     - Verifies TXT, M3U, CSV, JSON exports & clipboard sharing
+✓ src/test/components.test.tsx - Verifies LanguageModal, BottomNavigation, VideoCard, SnapTubeGuide
+✓ src/test/app.test.tsx       - Verifies root App render and mounting
+
+================================================================================
+[COMMAND CHEAT SHEET FOR DEVELOPERS & AGENTS]
+================================================================================
+- Start Dev Server:       npm run dev
+- Run Test Suite:         npm run test
+- Build Production:       npm run build   (runs prebuild -> tsc && vite build -> postbuild)
+- Preview Production:     npm run preview
+- Deploy to gh-pages:     npm run deploy  (runs predeploy -> gh-pages -d dist)
+
+================================================================================
+END OF SHORTSHUB MASTER CONTEXT
+================================================================================

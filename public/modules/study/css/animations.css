@@ -1,0 +1,77 @@
+/* ==========================================================================
+   CARTOON & COMIC ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes comicPop {
+  0% {
+    transform: scale(0.95);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Electron flow dash march in wires */
+@keyframes dashMarch {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+.electron-flow-anim {
+  animation: dashMarch 0.8s linear infinite;
+}
+
+/* Reading Now Panel Glow */
+@keyframes comicReadingPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px var(--ink-border), 6px 6px 0 var(--ink-border);
+  }
+  50% {
+    box-shadow: 0 0 0 5px var(--ink-border), 8px 8px 0 var(--ink-border);
+  }
+}
+
+.panel-reading-now {
+  animation: comicReadingPulse 1.4s ease-in-out infinite;
+}
+
+/* Mascot floating */
+.mascot-emoji {
+  animation: bounceSlow 3s ease-in-out infinite;
+}
+
+/* Button click feedback */
+.comic-pop-text {
+  display: inline-block;
+  animation: comicPop 0.3s ease-out;
+}

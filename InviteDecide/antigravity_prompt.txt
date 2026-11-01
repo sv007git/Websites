@@ -1,0 +1,409 @@
+# ==============================================================================
+# INVITEDECIDE — MASTER SYSTEM PROMPT & ARCHITECTURAL REFERENCE
+# ==============================================================================
+# File: antigravity_prompt.txt
+# Purpose: Authoritative project documentation, architecture, schema, state flow,
+#          and operational guidelines for Antigravity AI agents and engineers.
+#          Allows any fresh agent to immediately understand, develop, test,
+#          and extend InviteDecide WITHOUT re-analyzing the codebase or wasting tokens.
+# ==============================================================================
+
+--------------------------------------------------------------------------------
+1. PROJECT OVERVIEW & CORE PRODUCT VISION
+--------------------------------------------------------------------------------
+Project Name: InviteDecide
+Repository: https://github.com/sv007git/InviteDecide
+Live Deployment URL: https://sv007git.github.io/InviteDecide/
+Supabase Project URL: https://oruybhfodbbjpfvipoqk.supabase.co
+Platform Type: Multi-tenant SaaS Web Application (Desktop, Tablet, Mobile responsive)
+
+Central Idea:
+"An invitation should become an intelligent event participation and planning system,
+not merely a digital invitation card."
+
+Target Events:
+Indian Royal Weddings, Engagements, Receptions, Sangeet/Mehendi ceremonies,
+Milestone Birthdays, Corporate Galas, Anniversaries, and Religious/Housewarming celebrations.
+
+Key Operational Principles:
+1. Communication is strictly WHATSAPP-ONLY (No SMS, No Email).
+2. Guests NEVER register an account or install any mobile application.
+   Every guest or family accesses their personalized experience via a unique,
+   cryptographic, non-sequential invitation URL: `#/invite/:token`.
+3. Dual-Mode Architecture:
+   - Interactive Local Mode (localStorage + instant demo dataset)
+   - Live Supabase Cloud PostgreSQL Mode (with RLS, auth, and automated bidirectional sync).
+4. Full-stack Event Planning Engine:
+   - Event & Multi-day Ceremony Scheduling
+   - Digital Invitation Card Visual Canvas Designer
+   - Guest & Household Family Management
+   - WhatsApp Invitation Dispatch Queue
+   - Personalized RSVP with Arrival Time Slot Capacity Controls
+   - Food Selection & Catering Safety Buffer Portion Calculation
+   - 2D Drag-and-Drop Venue Seating Studio with 1-Click Family Auto-Allocation
+   - Gate Entry QR Pass Issuance (`QP-...`) & Mobile Camera Check-in Scanner
+   - Live Multi-Role Operational Dashboards & CSV/PDF Reporting
+
+--------------------------------------------------------------------------------
+2. TECHNOLOGY STACK & KEY DEPENDENCIES
+--------------------------------------------------------------------------------
+Frontend Framework:
+- React 18.3.1 (TypeScript 5.6)
+- Vite 5.4.9 (Configured with HashRouter for GitHub Pages compatibility)
+- HashRouter (`react-router-dom` v6.27.0)
+
+Styling & Aesthetic Typography:
+- Tailwind CSS 3.4.14 with custom luxury color palette (`gold`, `primary`, `rose`)
+- Typography loaded via Google Fonts in `index.html`:
+  - `Plus Jakarta Sans`: Modern, aesthetic SaaS UI typography.
+  - `Cormorant Garamond`: Ethereal, classical Indian royal wedding & luxury serif.
+  - `Playfair Display`: Regal editorial display font for couples and hosts.
+  - `Cinzel`: Classical Roman display font for crests and badges.
+  - `Great Vibes` & `Alex Brush`: Authentic flowing script calligraphy.
+- Lucide React 0.453.0 for all interface icons.
+
+State Management & Synchronization:
+- Zustand 5.0.0 (`src/stores/useAppStore.ts`)
+- LocalStorage persistence (`INVITEDECIDE_PERSISTED_STATE_V1` and `INVITEDECIDE_AUTH_USER_V1`)
+- Bidirectional Supabase Sync layer (`src/services/supabaseSync.ts`)
+
+Backend & Database:
+- Supabase Cloud (`@supabase/supabase-js` v2.45.6)
+- PostgreSQL Database with Row Level Security (RLS)
+- Supabase Auth (Email/Password, Google OAuth, Sessions)
+- Deterministic UUID conversion (`toValidUUID`) ensuring arbitrary client IDs map safely to Postgres UUIDs.
+
+Specialized Libraries:
+- QR Generation: `qrcode` (v1.5.4)
+- QR Scanning via Webcam/Mobile: `html5-qrcode` (v2.3.8)
+- Charts & Visual Metrics: `recharts` (v2.13.0)
+- Data Import & Export: `xlsx` (v0.18.5) and `papaparse` (v5.4.1)
+- PDF Generation: `jspdf` (v2.5.2) and `html2canvas` (v1.4.1)
+- Validation: `zod` (v3.23.8) and `react-hook-form` (v7.53.0)
+
+Testing:
+- Vitest 2.1.3 + JSDOM 25.0.1 + React Testing Library (7 test suites, 21 passing unit tests)
+
+--------------------------------------------------------------------------------
+3. DIRECTORY TREE & ARCHITECTURAL STRUCTURE
+--------------------------------------------------------------------------------
+InviteDecide/
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # GitHub Actions CI/CD to GitHub Pages
+│
+├── assets/                         # Pre-compiled static assets served on GitHub Pages root
+│   ├── app.js                      # Compiled JavaScript bundle
+│   ├── app.js.map                  # Source map
+│   └── index.css                   # Compiled Tailwind CSS bundle
+│
+├── dist/                           # Production build output generated by `npm run build`
+│
+├── public/                         # Public assets (vite.svg, robots.txt, 404.html)
+│   ├── 404.html                    # SPA redirect fallback for GitHub Pages
+│   └── .nojekyll                   # Prevents GitHub Pages Jekyll asset stripping
+│
+├── supabase/
+│   └── migrations/
+│       └── 20261031000001_initial_schema.sql  # Master PostgreSQL DDL schema & RLS rules
+│
+├── src/
+│   ├── main.tsx                    # React DOM entry point
+│   ├── App.tsx                     # Top-level HashRouter routing table
+│   ├── index.css                   # Tailwind directives, font rules, and aesthetic classes
+│   │
+│   ├── types/
+│   │   └── index.ts                # Master TypeScript definitions (Events, Guests, RSVPs, etc.)
+│   │
+│   ├── stores/
+│   │   └── useAppStore.ts          # Central Zustand store handling all state, actions, and persistence
+│   │
+│   ├── services/
+│   │   ├── supabase.ts             # Supabase client initialization & connection tester
+│   │   ├── supabaseSync.ts         # Bidirectional DB sync, UUID mapper, and batch upserts
+│   │   ├── demoData.ts             # 500-guest wedding dataset generator (Aditya & Priya)
+│   │   └── eventGenerator.ts       # 1-click end-to-end event setup generator from user inputs
+│   │
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── AppLayout.tsx       # SaaS application shell (Navbar, Sidebar, Modal wrapper)
+│   │   │   ├── Navbar.tsx          # Top bar with role dropdown, setup wizard trigger, gate shortcut
+│   │   │   ├── Sidebar.tsx         # Left navigation bar with live workspace badge
+│   │   │   └── MobileNav.tsx       # Responsive mobile navigation drawer
+│   │   │
+│   │   ├── events/
+│   │   │   └── EventSetupWizardModal.tsx  # 4-step wizard to input data once and populate all
+│   │   │
+│   │   ├── qr/
+│   │   │   ├── QRCodeDisplay.tsx   # Canvas & SVG QR code generator with download
+│   │   │   └── QRScannerModal.tsx  # html5-qrcode live webcam/camera scanner modal
+│   │   │
+│   │   └── ui/                     # Lightweight shadcn-style component primitives
+│   │       ├── badge.tsx
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       ├── dialog.tsx
+│   │       ├── input.tsx
+│   │       └── tabs.tsx
+│   │
+│   ├── pages/
+│   │   ├── landing/
+│   │   │   └── LandingPage.tsx     # Public landing page with feature highlights & auth links
+│   │   ├── auth/
+│   │   │   └── LoginPage.tsx       # Dual-tab Sign In / Sign Up with persistent auto-restore
+│   │   ├── dashboard/
+│   │   │   └── OverviewPage.tsx    # Dynamic role-based command center & live analytics
+│   │   ├── events/
+│   │   │   └── EventsListPage.tsx  # Multi-day ceremony list, venue rules, and timings
+│   │   ├── invitations/
+│   │   │   └── InvitationDesignerPage.tsx # Visual drag-and-drop card editor with export
+│   │   ├── guests/
+│   │   │   └── GuestListPage.tsx   # Guest list, family groupings, CSV import/export
+│   │   ├── whatsapp/
+│   │   │   └── WhatsAppManagerPage.tsx # WhatsApp dispatch queue, click-to-chat links
+│   │   ├── rsvp/
+│   │   │   ├── RSVPManagerPage.tsx # Organizer RSVP tracking & arrival slot crowd monitoring
+│   │   │   ├── GuestInvitePortalPage.tsx # Public guest RSVP portal (`#/invite/:token`)
+│   │   │   └── GuestPassPage.tsx   # Public digital QR gate entry pass (`#/pass/:token`)
+│   │   ├── catering/
+│   │   │   └── CateringPlannerPage.tsx # Menu dishes, dietary counts, safety buffer calculator
+│   │   ├── seating/
+│   │   │   └── SeatingStudioPage.tsx # 2D venue floor plan with 1-click auto-seating engine
+│   │   ├── checkin/
+│   │   │   └── StaffCheckInPage.tsx # Gate security webcam scanner & manual lookup
+│   │   ├── reports/
+│   │   │   └── ReportsPage.tsx     # Comprehensive PDF & CSV data exports
+│   │   ├── admin/
+│   │   │   └── PlatformAdminPage.tsx # Supabase connection manager & SaaS subscription tiers
+│   │   └── vendor/
+│   │       └── VendorPortalPage.tsx # Caterer kitchen schedule & portion prep interface
+│   │
+│   ├── utils/
+│   │   ├── cn.ts                   # Tailwind class merge utility
+│   │   └── export.ts               # CSV and spreadsheet export helpers
+│   │
+│   └── test/                       # Vitest automated test suites
+│       ├── setup.ts                # Global JSDOM mocks (HTMLCanvasElement, ResizeObserver)
+│       ├── appRender.test.tsx      # Verifies all top-level routes render without crashing
+│       ├── catering.test.ts        # Verifies buffer calculations and dietary filtering
+│       ├── checkin.test.ts         # Verifies gate check-in, duplicate scan rejection, revocations
+│       ├── eventWizard.test.ts     # Verifies 1-click setup generator populates all modules
+│       ├── rsvp.test.ts            # Verifies RSVP submissions, dish selections, pass issuance
+│       ├── seating.test.ts         # Verifies table seat assignments and family clustering
+│       └── supabaseSync.test.ts    # Verifies UUID conversion, local persistence, store actions
+│
+├── index.html                      # Root HTML with Google Fonts & universal loader script
+├── 404.html                        # SPA routing fallback for GitHub Pages
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── tailwind.config.js
+
+--------------------------------------------------------------------------------
+4. USER ROLES & ROLE-BASED DASHBOARD BEHAVIOR
+--------------------------------------------------------------------------------
+InviteDecide supports 10 specialized roles configured via `src/types/index.ts`:
+
+1. `owner`:
+   - Full administrative control over event budgets, ceremonies, catering, seating, and gate admissions.
+2. `event_manager`:
+   - Coordinates schedule, vendors, invitation dispatches, and on-ground logistics.
+3. `checkin_operator`:
+   - Gate security view: fast QR camera scanner, manual token lookup, and live admission gauges.
+4. `vendor`:
+   - Caterer view: portion requirements, safety buffers (10-15%), dietary counts (Veg, Non-Veg, Jain), and meal schedule.
+5. `catering_manager`:
+   - Curates menu categories, dish-by-dish portion calculations, and allergen labels.
+6. `seating_manager`:
+   - Table floor plan management, capacity utilization, unseated attendees counter, and 1-click auto-allocation.
+7. `guest_manager`:
+   - Household management, WhatsApp delivery funnel, CSV import, and RSVP conversion rates.
+8. `invitation_manager`:
+   - Visual digital card designer, font customization, and invitation dispatch links.
+9. `admin`:
+   - SaaS multi-tenancy, subscription tiers, and Supabase PostgreSQL health.
+10. `readonly`:
+    - View-only observer access.
+
+Role Switching:
+The user can switch roles on the fly using the role switcher dropdown in the Navbar
+or the Quick-Switch pills on `OverviewPage.tsx`. The entire dashboard spotlight
+dynamically transforms to highlight the specific metrics and actions for that role.
+
+--------------------------------------------------------------------------------
+5. CORE WORKFLOWS & HOW MODULES CONNECT
+--------------------------------------------------------------------------------
+
+A. Event Setup Wizard ("Populate Everything"):
+   - Located at `src/components/events/EventSetupWizardModal.tsx`.
+   - Accessible via the "⚡ Setup Wizard" button in Navbar, Sidebar, Overview, or Events page.
+   - User inputs high-level details: Event title, category, host names, venue, dates,
+     WhatsApp contact, guest capacity, cuisine style, dietary options, and ceremonies.
+   - User can click 1-click presets:
+     - 💍 Royal Indian Wedding (350 Guests, 4 functions)
+     - 🎂 Birthday Bash (80 Guests, 2 functions)
+     - 💼 Corporate Gala (250 Guests, 2 functions)
+     - 💍 Engagement Ceremony (150 Guests, 2 functions)
+   - When the user clicks "🚀 Populate Everything & Launch Event", `eventGenerator.ts`
+     automatically generates:
+     1. Event & Ceremony timelines (`event.functions`).
+     2. Digital Invitation Card with matching theme & typography.
+     3. Arrival time slots partitioned across guest capacity.
+     4. Catering menu with starters, mains, desserts, portion sizes, and allergens.
+     5. 2D Venue seating tables scaled to capacity with numbered seats.
+     6. Family guest list with unique WhatsApp invitation links and gate QR passes (`QP-...`).
+     7. Updates Zustand store, writes to localStorage, and syncs to Supabase.
+
+B. Guest Invitation & RSVP Flow:
+   - Each family primary contact receives a unique URL: `https://<domain>/#/invite/<token>`.
+   - The guest views the personalized invitation card customized with their family name.
+   - Guest clicks "RSVP Now" without creating an account.
+   - Guest confirms attendance, specifies adult/child counts, selects arrival time slot,
+     chooses food items from the caterer's menu, and notes dietary restrictions.
+   - Upon submission, the engine generates an official Gate Entry QR Pass (`QP-...`).
+   - The guest can view their digital pass at `#/pass/<token>`, download it as an image,
+     or share it on WhatsApp.
+
+C. Gate Admission & QR Check-in:
+   - Security staff accesses `/checkin` (or uses the "Gate" shortcut in the Navbar).
+   - Staff uses the live camera scanner (`html5-qrcode`) or enters the display code (e.g., `QP-7001`).
+   - `validateAndCheckIn(token)` verifies:
+     1. Pass authenticity against cryptographic hash.
+     2. Revocation status (`is_revoked`).
+     3. Admission capacity (`checked_in_count < max_attendees`).
+     4. Prevents duplicate scans and logs the timestamp and operator name in `checkinLogs`.
+
+D. Catering Calculation Engine:
+   - Located at `src/pages/catering/CateringPlannerPage.tsx`.
+   - Calculates confirmed portions from RSVPs + safety buffer % (default 10%).
+   - Recommends exact quantities to prepare (e.g. 240 portions + 24 buffer = 264 total).
+   - Displays real-time breakdown of Pure Veg, Non-Veg, Jain (no root vegetables), and Vegan.
+
+E. Venue Seating Studio:
+   - Located at `src/pages/seating/SeatingStudioPage.tsx`.
+   - Interactive 2D canvas with round and rectangular VIP tables.
+   - Features `runAutoSeatingAllocation()`: 1-click algorithm that iterates through
+     confirmed attendees, keeps family households together at the same table, and assigns seat IDs.
+
+--------------------------------------------------------------------------------
+6. DATABASE SCHEMA (SUPABASE POSTGRESQL TABLES)
+--------------------------------------------------------------------------------
+The full SQL migration is at `supabase/migrations/20261031000001_initial_schema.sql`.
+
+Key Tables:
+- `profiles`: Extends Supabase `auth.users` with `full_name`, `phone`, `avatar_url`.
+- `organizations`: Multi-tenant organization accounts with branding and subscription plan.
+- `organization_members`: Junction table mapping users to organizations with `role`.
+- `events`: Core event records (`id`, `organization_id`, `name`, `slug`, `category`,
+  `host_names`, `venue_name`, `address`, `start_date`, `end_date`, `settings`).
+- `event_functions`: Multi-day sub-ceremonies (`name`, `date`, `start_time`, `end_time`, `venue_name`).
+- `time_slots`: Hourly entrance windows with capacity and buffer capacity.
+- `guest_groups`: Household/family clusters (`name`, `code`, `total_invited`).
+- `guests`: Individual invitees (`family_id`, `full_name`, `whatsapp_number`,
+  `category`, `is_child`, `dietary_preference`, `is_primary_contact`).
+- `invitations`: Secure invitation tokens (`token`, `invitation_code`, `status`, `views_count`).
+- `rsvps`: Response records (`status`, `total_attendees`, `time_slot_id`, `dietary_notes`).
+- `attendees`: Individual RSVPed attendees linked to seats and food selections (`checked_in`).
+- `menu_categories` & `menu_items`: Catering dishes with dietary flags, portions, and unit costs.
+- `venue_layouts`, `venue_tables`, & `seats`: Seating arrangements and seat-to-attendee mapping.
+- `qr_passes`: Gate security passes (`token_hash`, `display_code`, `max_attendees`, `is_revoked`).
+- `checkin_logs`: Entrance audit log (`qr_pass_id`, `scan_type`, `status`, `timestamp`).
+- `whatsapp_queue`: Outgoing WhatsApp dispatch queue items with template names and URLs.
+
+UUID Compatibility Helper:
+`toValidUUID(str)` in `src/services/supabaseSync.ts` deterministically maps client-side
+mock strings (e.g. `evt-001`, `cat-1`) into valid, standards-compliant PostgreSQL UUIDs,
+preventing database insert failures.
+
+--------------------------------------------------------------------------------
+7. LOCAL PERSISTENCE & AUTHENTICATION RECOVERY
+--------------------------------------------------------------------------------
+InviteDecide remembers the user across page reloads and browser restarts:
+
+1. `INVITEDECIDE_PERSISTED_STATE_V1`:
+   - Managed by `saveStateToLocalStorage()` and `loadStateFromLocalStorage()`.
+   - Stores `userRole`, `userEmail`, `userName`, `activeOrgId`, `isDemoMode`, and all
+     event data arrays.
+   - `loadStateFromLocalStorage()` validates that `parsed && parsed.event && parsed.event.name`
+     exists before hydrating. It NEVER deletes clean workspaces with 0 guests.
+
+2. `INVITEDECIDE_AUTH_USER_V1` & `INVITEDECIDE_LAST_EMAIL`:
+   - Managed by `saveAuthSession()` and `loadAuthSession()`.
+   - Remembers the user's logged-in identity and pre-fills email in `LoginPage.tsx`.
+   - In `LoginPage.tsx`, an auto-restore `useEffect` automatically navigates to `/dashboard`
+     if an active user session or Supabase auth session is detected.
+   - In `LandingPage.tsx`, returning logged-in users see a direct "Resume Workspace" button.
+
+--------------------------------------------------------------------------------
+8. GITHUB PAGES DEPLOYMENT & SPA ROUTING RULES
+--------------------------------------------------------------------------------
+GitHub Pages has unique requirements that are carefully handled in this repository:
+
+1. HashRouter (`#/`):
+   - `src/App.tsx` uses `HashRouter` instead of `BrowserRouter`.
+   - This ensures routes like `#/dashboard`, `#/invite/tok_123`, and `#/pass/tok_123`
+     load without requiring server-side URL rewrite rules.
+
+2. Pre-Compiled Root Assets (`assets/app.js` and `assets/index.css`):
+   - GitHub Pages deploys from the `main` branch root or `gh-pages` branch.
+   - `vite.config.ts` outputs fixed filenames (`assets/app.js` and `assets/index.css`).
+   - Root `index.html` contains a universal loader script that dynamically injects
+     `./assets/app.js` and `./assets/index.css` if visited via `github.io`.
+   - Whenever you run `npm run build`, copy `dist/assets/*` into root `assets/` so both
+     local and production deployments stay in sync.
+
+3. Public vs Organizer Route Guard Rules:
+   - In `src/components/layout/AppLayout.tsx` and `src/components/layout/Navbar.tsx`:
+     ```typescript
+     const isPublicGuestRoute =
+       location.pathname.startsWith('/invite') ||
+       location.pathname === '/rsvp' ||
+       location.pathname.startsWith('/rsvp/') ||
+       location.pathname.startsWith('/pass');
+     ```
+   - CRITICAL: Never use a greedy check like `location.pathname.startsWith('/rsvp')`!
+     Doing so accidentally treats `/rsvp-manager` as an unauthenticated public route,
+     stripping the Navbar and Sidebar. Always keep `/rsvp-manager` inside `AppLayout`.
+
+--------------------------------------------------------------------------------
+9. TESTING & VERIFICATION COMMANDS
+--------------------------------------------------------------------------------
+Test Command:
+$ npm test
+- Executes Vitest test runner across all 7 test suites:
+  1. `appRender.test.tsx` (Route mounting & JSDOM checks)
+  2. `catering.test.ts` (Portion & buffer calculations)
+  3. `checkin.test.ts` (Gate scanner, token hashing, duplicate check-in prevention)
+  4. `eventWizard.test.ts` (1-click event generator & module population)
+  5. `rsvp.test.ts` (RSVP submissions, dish selections, pass generation)
+  6. `seating.test.ts` (Table seat allocation & family clustering)
+  7. `supabaseSync.test.ts` (UUID mapping, persistence, store hydration)
+
+Build Command:
+$ npm run build
+- Runs TypeScript compiler (`tsc`) and Vite production bundler (`vite build`).
+- Output is emitted to `dist/`.
+
+Development Server:
+$ npm run dev
+- Starts local development server at `http://localhost:5173/`.
+
+--------------------------------------------------------------------------------
+10. COMMON PITFALLS & GUIDELINES FOR AGENTS
+--------------------------------------------------------------------------------
+1. WhatsApp Only:
+   Never add SMS or email fields or gateways. All guest shares and invitation links
+   use direct WhatsApp API links (`https://api.whatsapp.com/send?text=...`).
+2. No Native Apps:
+   Do not build or suggest React Native, Flutter, iOS, or Android native apps. The entire
+   platform is 100% web-based and responsive for mobile and desktop browsers.
+3. Guests Must Not Be Forced to Login:
+   Any guest clicking `#/invite/:token` must have full access to view the invitation,
+   RSVP, select food, and get their QR pass without creating an account or password.
+4. Preserving Comments & Integrity:
+   Preserve existing docstrings, Supabase sync hooks, and test assertions when adding features.
+5. Windows PowerShell Command Syntax:
+   The user's OS is Windows. Avoid chaining commands with `&&` in PowerShell; use `;` instead.
+   Example: `npm run build; npm test`.
+# ==============================================================================

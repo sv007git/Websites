@@ -1,0 +1,591 @@
+import React, { useState, useEffect, useRef } from 'react'
+import {
+  Image as ImageIcon,
+  Plus,
+  Heart,
+  Calendar,
+  X,
+  Upload,
+  Sparkles,
+  Loader2,
+  Trash2,
+  AlertTriangle,
+  Check,
+} from 'lucide-react'
+import { supabase } from '../../lib/supabaseClient'
+import { useAuth } from '../../context/AuthContext'
+import { useCouple } from '../../context/CoupleContext'
+import { uploadCoupleMedia, getSignedMediaUrl, compressImage, deleteCoupleMedia } from '../../lib/storageHelper'
+import { MediaLightbox } from '../Chat/MediaLightbox'
+import { format } from 'date-fns'
+import { showBrowserNotification, playNotificationSound } from '../../lib/notificationHelper'
+import { useTheme } from '../../context/ThemeContext'
+import confetti from 'canvas-confetti'
+
+export const MemoriesView = ({ currentTab = 'memories', onNavigate = null, onShowToast = null }) => {
+  const { user } = useAuth()
+  const { coupleSpace, partner } = useCouple()
+  const { currentTheme } = useTheme()
+
+  const [memories, setMemories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [activeLightbox, setActiveLightbox] = useState(null)
+
+  // Form states
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [memoryDate, setMemoryDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [isCompressing, setIsCompressing] = useState(false)
+  const [compressionInfo, setCompressionInfo] = useState(null)
+  const [error, setError] = useState(null)
+
+  // Delete moment modal state
+  const [memoryToDelete, setMemoryToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const fileInputRef = useRef(null)
+
+  const fetchMemories = async () => {
+    if (!supabase || !coupleSpace?.id) return
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('memories')
+        .select('*')
+        .eq('couple_space_id', coupleSpace.id)
+        .order('memory_date', { ascending: false })
+
+      if (error) throw error
+
+      // Batch resolve signed URLs for private images
+      const resolved = await Promise.all(
+        (data || []).map(async (m) => {
+          if (m.media_url && !m.media_url.startsWith('http')) {
+            const signed = await getSignedMediaUrl(m.media_url, 86400)
+            return { ...m, media_url: signed || m.media_url }
+          }
+          return m
+        })
+      )
+
+      setMemories(resolved)
+    } catch (err) {
+      console.error('Error fetching memories:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchMemories()
+  }, [coupleSpace?.id])
+
+  // Realtime subscription for memories (instant add/delete synchronization)
+  useEffect(() => {
+    if (!supabase || !coupleSpace?.id) return
+
+    const channel = supabase
+      .channel(`couple_memories_${coupleSpace.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'memories',
+          filter: `couple_space_id=eq.${coupleSpace.id}`,
+        },
+        async (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newMemory = payload.new
+            if (newMemory.media_url && !newMemory.media_url.startsWith('http')) {
+              newMemory.media_url = (await getSignedMediaUrl(newMemory.media_url, 86400)) || newMemory.media_url
+            }
+            setMemories((prev) => {
+              if (prev.some((m) => m.id === newMemory.id)) return prev
+              return [newMemory, ...prev]
+            })
+
+            // Trigger notification if created by partner
+            if (newMemory.created_by !== user?.id) {
+              const isViewingMemories = currentTab === 'memories' && !document.hidden
+              if (!isViewingMemories) {
+                showBrowserNotification({
+                  title: `${partner?.display_name || 'My Love'} shared a new memory 📸`,
+                  body: newMemory.title || 'A special moment was just added to your shared album 💖',
+                  icon: newMemory.media_url || partner?.avatar_url,
+                  tag: `mem-${newMemory.id}`,
+                  onClick: () => {
+                    onNavigate?.('memories')
+                  },
+                })
+
+                onShowToast?.({
+                  title: `${partner?.display_name || 'My Love'} added a memory 📸`,
+                  content: newMemory.title || 'New moment added to memories',
+                  avatar: partner?.avatar_url,
+                  tab: 'memories',
+                })
+              } else {
+                playNotificationSound()
+              }
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const deletedId = payload.old.id
+            setMemories((prev) => prev.filter((m) => m.id !== deletedId))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [coupleSpace?.id, user?.id, currentTab, partner?.display_name, partner?.avatar_url, onNavigate, onShowToast])
+
+  // Handle image selection with automatic client-side compression
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const origSizeMb = (file.size / (1024 * 1024)).toFixed(2)
+    setIsCompressing(true)
+    setCompressionInfo(null)
+
+    try {
+      // Downscale and compress image client-side to max 1600x1600, quality 0.82
+      const compressed = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.82,
+      })
+
+      const compSizeKb = Math.round(compressed.size / 1024)
+      const pctSaved = Math.round((1 - compressed.size / file.size) * 100)
+
+      setSelectedFile(compressed)
+      setCompressionInfo({
+        orig: `${origSizeMb} MB`,
+        comp: `${compSizeKb} KB`,
+        saved: pctSaved > 0 ? `${pctSaved}% smaller` : null,
+      })
+
+      const url = URL.createObjectURL(compressed)
+      setPreviewUrl(url)
+    } catch (err) {
+      console.warn('Image compression fallback:', err)
+      setSelectedFile(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    } finally {
+      setIsCompressing(false)
+    }
+  }
+
+  const handleAddMemory = async (e) => {
+    e.preventDefault()
+    if (!selectedFile || !coupleSpace || !user) return
+    setIsUploading(true)
+    setError(null)
+
+    try {
+      // 1. Upload compressed image to couple-media private storage
+      const uploaded = await uploadCoupleMedia({
+        coupleSpaceId: coupleSpace.id,
+        file: selectedFile,
+        category: 'memories',
+      })
+
+      // 2. Insert into memories table
+      const { error: dbError } = await supabase.from('memories').insert({
+        couple_space_id: coupleSpace.id,
+        created_by: user.id,
+        title: title.trim(),
+        description: description.trim() || null,
+        media_url: uploaded.path,
+        memory_date: memoryDate,
+      })
+
+      if (dbError) throw dbError
+
+      confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } })
+      setIsAddModalOpen(false)
+      setTitle('')
+      setDescription('')
+      setSelectedFile(null)
+      setPreviewUrl(null)
+      setCompressionInfo(null)
+      fetchMemories()
+    } catch (err) {
+      console.error('Error adding memory:', err)
+      setError(err.message || 'Could not save this memory.')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleDeleteMemory = async () => {
+    if (!supabase || !memoryToDelete?.id) return
+    setIsDeleting(true)
+    try {
+      // 1. Delete from Supabase memories table
+      const { error } = await supabase.from('memories').delete().eq('id', memoryToDelete.id)
+      if (error) throw error
+
+      // 2. Delete file from private storage
+      if (memoryToDelete.media_url) {
+        await deleteCoupleMedia(memoryToDelete.media_url)
+      }
+
+      // 3. Remove from local state
+      setMemories((prev) => prev.filter((m) => m.id !== memoryToDelete.id))
+      setMemoryToDelete(null)
+    } catch (err) {
+      console.error('Error deleting memory:', err)
+      setError(err.message || 'Could not delete memory.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const toggleFavorite = async (memoryId, currentFav) => {
+    if (!supabase || !memoryId) return
+    try {
+      const nextFav = !currentFav
+      setMemories((prev) =>
+        prev.map((m) => (m.id === memoryId ? { ...m, is_favorite: nextFav } : m))
+      )
+      if (nextFav) {
+        confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } })
+      }
+      await supabase.from('memories').update({ is_favorite: nextFav }).eq('id', memoryId)
+    } catch (err) {
+      console.warn('Error toggling memory favorite:', err)
+    }
+  }
+
+  return (
+    <div className="flex-1 max-w-4xl mx-auto w-full p-4 pb-20 space-y-4">
+      {/* Top Header */}
+      <div className={`glass rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 border ${currentTheme.border}`}>
+        <div className="flex items-start sm:items-center space-x-3">
+          <div className={`w-10 h-10 rounded-2xl bg-gradient-to-tr ${currentTheme.primary} text-white flex items-center justify-center shadow-md ${currentTheme.shadow} shrink-0`}>
+            <ImageIcon className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">Our Memories 📸</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Capturing our most precious moments together.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            setCompressionInfo(null)
+            setSelectedFile(null)
+            setPreviewUrl(null)
+            setIsAddModalOpen(true)
+          }}
+          className={`self-start sm:self-auto py-2 px-3.5 rounded-full ${currentTheme.buttonGrad} hover:opacity-95 text-white text-xs font-semibold shadow-md ${currentTheme.shadow} active:scale-95 transition flex items-center gap-1.5 shrink-0`}
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Moment</span>
+        </button>
+      </div>
+
+      {/* Memories Grid */}
+      {loading ? (
+        <div className="py-20 flex items-center justify-center">
+          <div className={`w-8 h-8 border-3 border-current ${currentTheme.activeText} border-t-transparent rounded-full animate-spin`} />
+        </div>
+      ) : memories.length === 0 ? (
+        <div className={`glass rounded-3xl p-10 text-center text-slate-400 border ${currentTheme.border}`}>
+          <div className={`w-14 h-14 rounded-2xl ${currentTheme.softBg} flex items-center justify-center ${currentTheme.activeText} mx-auto mb-3`}>
+            <ImageIcon className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No memories yet</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-1">
+            Tap "Add Moment" to save your first photograph and date milestone in your shared vault!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {memories.map((m) => (
+            <div
+              key={m.id}
+              className={`glass rounded-3xl overflow-hidden border ${currentTheme.borderLight} hover:${currentTheme.border} shadow-sm hover:shadow-md transition group relative flex flex-col`}
+            >
+              {/* Image Thumbnail */}
+              <div
+                onClick={() =>
+                  setActiveLightbox({
+                    url: m.media_url,
+                    type: 'image',
+                    name: m.title,
+                  })
+                }
+                className="aspect-square bg-slate-100 dark:bg-slate-800 overflow-hidden cursor-pointer relative"
+              >
+                <img
+                  src={m.media_url}
+                  alt={m.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+
+                {/* Floating Actions on Thumbnail */}
+                <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex items-center gap-1.5 z-10">
+                  {/* Delete / Unsend Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setMemoryToDelete(m)
+                    }}
+                    className="p-1.5 sm:p-2 rounded-full bg-black/50 hover:bg-red-600 text-white/90 hover:text-white backdrop-blur-md transition shadow-sm"
+                    title="Delete moment"
+                    aria-label="Delete moment"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Favorite Heart Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleFavorite(m.id, m.is_favorite)
+                    }}
+                    className={`p-1.5 sm:p-2 rounded-full backdrop-blur-md transition shadow-sm ${
+                      m.is_favorite
+                        ? `${currentTheme.badge}`
+                        : 'bg-black/50 text-white/90 hover:text-white'
+                    }`}
+                    title={m.is_favorite ? 'Favorited' : 'Favorite'}
+                  >
+                    <Heart className={`w-3.5 h-3.5 ${m.is_favorite ? 'fill-current' : ''}`} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Memory Details */}
+              <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className={`flex items-center gap-1.5 text-[11px] ${currentTheme.activeText} font-semibold mb-1`}>
+                    <Calendar className="w-3.5 h-3.5 shrink-0" />
+                    <span>{format(new Date(m.memory_date), 'MMMM d, yyyy')}</span>
+                  </div>
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere] leading-snug">{m.title}</h4>
+                  {m.description && (
+                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed break-words [overflow-wrap:anywhere]">
+                      {m.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add Memory Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className={`w-full max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-midnight-900 border ${currentTheme.border} rounded-3xl p-5 sm:p-6 shadow-2xl relative`}>
+            <button
+              onClick={() => setIsAddModalOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+              Add a Romantic Memory 📸
+            </h3>
+
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 text-red-600 text-xs">{error}</div>
+            )}
+
+            <form onSubmit={handleAddMemory} className="space-y-4">
+              {/* Photo selector */}
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  required
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+
+                {previewUrl ? (
+                  <div className="space-y-2">
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`aspect-video w-full rounded-2xl overflow-hidden cursor-pointer relative group border ${currentTheme.border}`}
+                    >
+                      <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-semibold">
+                        Change Photo
+                      </div>
+                    </div>
+
+                    {/* Compression Optimization Badge */}
+                    {compressionInfo && (
+                      <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-[11px] text-emerald-700 dark:text-emerald-300 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 font-medium">
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>Photo optimized for instant upload</span>
+                        </div>
+                        <span className="font-semibold font-mono text-[10px] bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
+                          {compressionInfo.comp} {compressionInfo.saved ? `(${compressionInfo.saved})` : ''}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isCompressing}
+                    className={`w-full h-36 rounded-2xl border-2 border-dashed ${currentTheme.border} ${currentTheme.softBg} flex flex-col items-center justify-center ${currentTheme.activeText} transition disabled:opacity-50`}
+                  >
+                    {isCompressing ? (
+                      <>
+                        <Loader2 className="w-6 h-6 mb-1 animate-spin" />
+                        <span className="text-xs font-medium">Compressing & optimizing photo...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 mb-1 opacity-80" />
+                        <span className="text-xs font-medium">Select a special photo</span>
+                        <span className="text-[10px] text-slate-400 mt-0.5">Automatically compressed for fast upload</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Our First Trip to the Beach"
+                  className={`w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:ring-2 ${currentTheme.ring} outline-none`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={memoryDate}
+                  onChange={(e) => setMemoryDate(e.target.value)}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:ring-2 ${currentTheme.ring} outline-none`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Story / Note (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What made this moment unforgettable..."
+                  className={`w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:ring-2 ${currentTheme.ring} outline-none resize-none`}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUploading || isCompressing}
+                  className={`px-5 py-2.5 ${currentTheme.buttonGrad} hover:opacity-95 text-white text-xs font-semibold rounded-xl shadow-md ${currentTheme.shadow} disabled:opacity-50 flex items-center gap-1.5`}
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Moment</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete / Unsend Confirmation Modal */}
+      {memoryToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-sm rounded-3xl bg-white dark:bg-midnight-900 border border-red-200 dark:border-red-900/60 p-5 sm:p-6 shadow-2xl space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Delete this Moment?
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Are you sure you want to delete <span className="font-semibold text-slate-800 dark:text-slate-200">"{memoryToDelete.title}"</span>? This will unsend and permanently remove it from your shared memories vault for both of you.
+              </p>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setMemoryToDelete(null)}
+                disabled={isDeleting}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteMemory}
+                disabled={isDeleting}
+                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md shadow-red-600/30 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <span>Delete Moment</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox for memories */}
+      <MediaLightbox media={activeLightbox} onClose={() => setActiveLightbox(null)} />
+    </div>
+  )
+}

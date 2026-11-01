@@ -1,0 +1,193 @@
+import { Project } from '@webforge/schema';
+import {
+  generateFullMysqlMigration,
+  generatePhpDatabaseClass,
+  generatePhpAuthClass,
+  generatePhpRouterClass,
+  generatePhpFrontController,
+} from '@webforge/backend-adapters';
+import { GeneratedFile } from '../nextjs/nextjs-generator';
+
+export function generatePhpProject(project: Project): GeneratedFile[] {
+  const files: GeneratedFile[] = [];
+
+  // 1. public/index.php
+  files.push({
+    path: 'public/index.php',
+    content: generatePhpFrontController(project.database),
+  });
+
+  // 2. public/.htaccess
+  files.push({
+    path: 'public/.htaccess',
+    content: `RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+`,
+  });
+
+  // 3. src/Database.php
+  files.push({
+    path: 'src/Database.php',
+    content: generatePhpDatabaseClass(),
+  });
+
+  // 4. src/Auth.php
+  files.push({
+    path: 'src/Auth.php',
+    content: generatePhpAuthClass(),
+  });
+
+  // 5. src/Router.php
+  files.push({
+    path: 'src/Router.php',
+    content: generatePhpRouterClass(),
+  });
+
+  // 6. MySQL Migrations and Seeds
+  const { migrationSql, seedSql } = generateFullMysqlMigration(project.database);
+  files.push({
+    path: 'database/schema.sql',
+    content: migrationSql,
+  });
+  files.push({
+    path: 'database/seed.sql',
+    content: seedSql,
+  });
+
+  // 7. Generate HTML/PHP Views
+  project.pages.forEach((page) => {
+    const slugName = page.slug === '/' ? 'home' : page.slug.replace(/^\//, '').replace(/\//g, '-');
+    files.push({
+      path: `views/${slugName}.php`,
+      content: `<?php
+// Page: ${page.name}
+$pageTitle = "${page.name} | ${project.name}";
+?>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($pageTitle) ?></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: ${project.theme.colors.primary};
+            --background: ${project.theme.colors.background};
+            --text: ${project.theme.colors.text};
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="/" class="font-extrabold text-lg text-white">${project.name}</a>
+            <nav class="flex items-center gap-6 text-sm text-slate-300">
+                ${project.pages.map((p) => `<a href="${p.slug}" class="hover:text-white">${p.name}</a>`).join('\n                ')}
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl mx-auto px-4 py-12 w-full space-y-12">
+        <div class="space-y-4">
+            <h1 class="text-4xl font-extrabold text-white">${page.name}</h1>
+            <p class="text-slate-400">${page.seo.description || project.description}</p>
+        </div>
+
+        <div class="space-y-8">
+            ${page.blocks
+              .filter((b) => !b.hidden)
+              .map((b) => `
+            <section id="${b.id}" class="p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <span class="text-xs uppercase font-mono text-blue-400 font-bold">${b.type}</span>
+                ${b.props.title ? `<h3 class="text-2xl font-bold text-white">${b.props.title}</h3>` : ''}
+                ${b.props.subtitle ? `<p class="text-xs text-slate-400">${b.props.subtitle}</p>` : ''}
+            </section>`)
+              .join('\n            ')}
+        </div>
+    </main>
+
+    <footer class="py-6 bg-slate-950 border-t border-slate-900 text-center text-xs text-slate-500">
+        <p>&copy; <?= date('Y') ?> ${project.name}. Self-hosted PHP 8.x target by WebForge Studio.</p>
+    </footer>
+</body>
+</html>
+`,
+    });
+  });
+
+  // 8. docker-compose.yml for 1-command startup
+  files.push({
+    path: 'docker-compose.yml',
+    content: `version: '3.8'
+
+services:
+  web:
+    image: php:8.2-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=webforge_app
+      - DB_USER=webforge_user
+      - DB_PASS=secret123
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsecret
+      MYSQL_DATABASE: webforge_app
+      MYSQL_USER: webforge_user
+      MYSQL_PASSWORD: secret123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+
+volumes:
+  db_data:
+`,
+  });
+
+  // 9. README.md
+  files.push({
+    path: 'README.md',
+    content: `# ${project.name} (PHP 8.x + MySQL Target)
+
+Generated by **WebForge Studio**. This application is engineered for standard LAMP/LEMP production hosting or containerized Docker execution with zero third-party licensing fees.
+
+## Architecture
+
+- **Clean Router & Front Controller**: Single entry point at \`public/index.php\`
+- **Database Layer**: PDO prepared statements with UTF8MB4 security (\`src/Database.php\`)
+- **Session & CSRF Guard**: Cryptographic tokens for all forms (\`src/Auth.php\`)
+- **Restful API Handlers**: Built-in JSON endpoints under \`/api/*\`
+
+## Quick Start (Docker)
+
+\`\`\`bash
+docker compose up -d
+\`\`\`
+Visit [http://localhost:8080](http://localhost:8080) to access the application.
+
+## Manual LAMP / cPanel Deployment
+
+1. Create a MySQL database and import \`database/schema.sql\` and \`database/seed.sql\`.
+2. Configure your environment variables or adjust \`src/Database.php\`.
+3. Set your document root to the \`public/\` directory.
+`,
+  });
+
+  return files;
+}

@@ -1,0 +1,378 @@
+# COOKFOOD — MASTER AI AGENT CONTEXT & ARCHITECTURE DIRECTORY
+File: ANTIGRAVITY_PROMPT.md / antigravity_prompt.txt
+Role: Master reference document for fresh Google Antigravity / AI coding assistant sessions.
+Notice to Incoming Agent: DO NOT waste tokens analyzing the full codebase or scanning individual files. This document contains the complete technical architecture, file map, TypeScript domain models, recipe catalog, design system tokens, state management rules, routing tables, and known gotchas. Read this document to immediately become fully context-aware.
+
+================================================================================
+1. PROJECT IDENTITY & ESSENTIAL LINKS
+================================================================================
+- Project Name: CookFood
+- Tagline: Modern Indian Recipe Discovery & Smart Cooking Platform with Dynamic Quantity Scaling
+- Inspiration: Inspired by the visual elegance, meal-time browsing, and recipe presentation of Hebbar's Kitchen, but built with 100% original, copyright-clean code, custom branding, and modern React 19 architecture.
+- Repository: https://github.com/sv007git/CookFood
+- Default Branch: main (source code)
+- Deployment Branch: gh-pages (production build output)
+- Live Production URL: https://sv007git.github.io/CookFood/
+- Hosting Model: 100% Client-Side Static Single Page Application (SPA) on GitHub Pages. No backend server, no database server, no paid third-party APIs.
+
+================================================================================
+2. CORE CAPABILITIES & HIGHLIGHTS
+================================================================================
+1. Dynamic Recipe Quantity Adapter (Flagship Feature):
+   - Automatically recalculates all ingredient amounts in real time when serving size changes.
+   - Handles kitchen fractions (1/2, 1/4, 3/4, 1 1/2), range quantities (2-3 tbsp), approximate amounts (approx. 1 cup), and qualitative items (to taste, as needed).
+   - Pluralizes units accurately (cup -> cups, clove -> cloves, pinch -> pinches; while keeping g, kg, ml, tbsp, tsp invariant).
+   - Multi-batch scaling guidance warning when scaled > 3x original size.
+   - Interactive checklist with tap-to-cross ingredients.
+   - One-click Copy to Clipboard, Browser Print, and Add to Shopping List.
+
+2. Interactive Cooking Mode:
+   - Fullscreen distraction-free step-by-step cooking experience.
+   - Per-step interactive countdown timers with audio alert / visual pulse.
+   - Confetti celebration upon recipe completion (canvas-confetti).
+
+3. Smart Search & Multi-Facet Filtering:
+   - Global modal search (Ctrl+K / Cmd+K) with live debounce and recent search memory.
+   - Multi-criteria filter sidebar: Meal Time, Cuisine, Diet (Veg, Vegan, Jain, No Onion-Garlic, Gluten-Free), Max Cooking Time, Difficulty, and Sorting.
+
+4. Offline Shopping List:
+   - Persistent item basket stored in localStorage.
+   - Check off items while shopping in the market.
+   - One-click share formatted shopping list via WhatsApp.
+
+5. Internationalization (i18n):
+   - Tri-lingual support: English (en), Telugu (te), and Tamil (ta).
+   - Language selector in header instantly updates UI labels across the app.
+
+6. Custom Recipe Builder:
+   - In-app modal tool allowing users to craft, preview, import, and export custom recipes via JSON schema.
+
+7. SEO & Structured Data:
+   - Schema.org Recipe JSON-LD dynamically injected in RecipeDetailsPage.
+   - OpenGraph meta tags, robots.txt, and sitemap.xml in public/.
+
+================================================================================
+3. TECH STACK SPECIFICATION
+================================================================================
+- Core Framework: React 19.3.1
+- DOM Engine: React DOM 19.3.1
+- Language: TypeScript ~7.0.2
+- Bundler / Dev Server: Vite ^8.3.5 (base: '/CookFood/')
+- CSS Framework: Tailwind CSS ^3.4.19
+- Routing: React Router DOM ^7.18.5 (HashRouter)
+- Icons: Lucide React ^1.66.0 (Note: No Github icon in bundle; use inline SVG)
+- Visual Effects: Canvas Confetti ^1.9.4
+- Test Runner: Vitest ^5.0.5 (15 passing unit tests)
+- Linter: Oxlint ^1.89.0
+- Persistence: Browser LocalStorage (keys prefixed with cookfood_)
+
+================================================================================
+4. COMPLETE PROJECT FILE DIRECTORY
+================================================================================
+CookFood/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # CI/CD: Builds on push to main & pushes dist/ to gh-pages branch
+├── public/
+│   ├── 404.html                    # SPA redirection fallback for direct GitHub Pages hits
+│   ├── favicon.svg                 # Brand chef hat / steam favicon
+│   ├── icons.svg                   # PWA / web icon definitions
+│   ├── robots.txt                  # Search engine crawling rules
+│   └── sitemap.xml                 # Canonical XML sitemap for search engines
+├── src/
+│   ├── assets/
+│   │   ├── hero.png                # Hero section illustration / photography asset
+│   │   ├── react.svg               # Vite/React template icon
+│   │   └── vite.svg                # Vite template icon
+│   ├── components/
+│   │   ├── CookingMode/
+│   │   │   └── CookingMode.tsx     # Fullscreen distraction-free cooking wizard + confetti
+│   │   ├── CookingSteps/
+│   │   │   └── CookingSteps.tsx    # Step-by-step accordion with interactive timers
+│   │   ├── Footer/
+│   │   │   └── Footer.tsx          # Site footer (uses custom inline SVG for GitHub)
+│   │   ├── Header/
+│   │   │   └── Header.tsx          # Top navigation, search trigger, theme toggle, lang picker
+│   │   ├── IngredientList/
+│   │   │   └── IngredientList.tsx  # Scaled ingredient checklist with strike-through toggle
+│   │   ├── MobileBottomNav/
+│   │   │   └── MobileBottomNav.tsx # Sticky bottom tab bar for mobile/tablet screens
+│   │   ├── RecipeBuilder/
+│   │   │   └── RecipeBuilderModal.tsx # Interactive JSON recipe creator, importer & exporter
+│   │   ├── RecipeCard/
+│   │   │   └── RecipeCard.tsx      # Reusable card with 5 variants: standard, featured, horizontal, compact, trending
+│   │   ├── RecipeFilters/
+│   │   │   └── RecipeFilters.tsx   # Multi-attribute filter sidebar with drawer on mobile
+│   │   ├── SearchBar/
+│   │   │   └── SearchModal.tsx     # Ctrl+K modal with quick suggestions & recent searches
+│   │   ├── ServingAdapter/
+│   │   │   └── ServingAdapter.tsx  # Dynamic scaler: counter, quick buttons, copy, print, shopping list
+│   │   └── ShoppingList/
+│   │       └── ShoppingListModal.tsx # Shopping basket with item checks & WhatsApp share format
+│   ├── context/
+│   │   └── AppContext.tsx          # Central state: favorites, shopping list, theme, i18n, modals
+│   ├── data/
+│   │   └── recipes/
+│   │       ├── breakfast.ts        # 10 Breakfast recipes (Dosa, Idli, Vada, Poha, Upma, etc.)
+│   │       ├── dinner.ts           # 8 Dinner recipes (Dal Makhani, Khichdi, Phulka, etc.)
+│   │       ├── drinks.ts           # 6 Beverage recipes (Filter Coffee, Chai, Lassi, Chaas, etc.)
+│   │       ├── healthy.ts          # 6 Diet/Health recipes (Moong Chilla, Oats Upma, Quinoa, etc.)
+│   │       ├── lunch.ts            # 10 Lunch recipes (Paneer Butter Masala, Biryani, Sambar, etc.)
+│   │       ├── snacks.ts           # 8 Snack recipes (Samosa, Pakoda, Bonda, Sev Puri, etc.)
+│   │       ├── sweets.ts           # 8 Sweet/Dessert recipes (Gulab Jamun, Rasmalai, Halwa, etc.)
+│   │       ├── index.ts            # Consolidates all 56 recipes & exports lookup/helper functions
+│   │       └── recipes.test.ts     # Vitest suite verifying ID uniqueness, slugs & data integrity
+│   ├── pages/
+│   │   ├── Category/
+│   │   │   └── CategoryPage.tsx    # Filtered recipe view by meal time category
+│   │   ├── Favorites/
+│   │   │   └── FavoritesPage.tsx   # User's bookmarked recipes from localStorage
+│   │   ├── Home/
+│   │   │   └── HomePage.tsx        # High-conversion landing page with 10 rich curated sections
+│   │   ├── RecipeDetails/
+│   │   │   └── RecipeDetailsPage.tsx # Detailed recipe page with scaler, checklist, steps & JSON-LD
+│   │   ├── Recipes/
+│   │   │   └── RecipesPage.tsx     # Full browsable recipe directory with active filters
+│   │   └── Search/
+│   │       └── SearchPage.tsx      # Dedicated full-page search results with query params
+│   ├── types/
+│   │   └── recipe.ts               # Master TypeScript interfaces and custom union types
+│   ├── utils/
+│   │   ├── fractionFormatter.ts    # Converts decimals into kitchen fractions (1/2, 1/4, 1 1/3, etc.)
+│   │   ├── i18n.ts                 # Translation dictionary for English, Telugu, and Tamil
+│   │   ├── quantityScaler.ts       # Mathematical scaling engine, unit pluralization & warnings
+│   │   ├── quantityScaler.test.ts  # Vitest suite covering edge cases in scaling & fractions
+│   │   ├── searchEngine.ts         # Fast client-side fuzzy search and suggestion engine
+│   │   └── storage.ts              # Type-safe wrappers for browser LocalStorage operations
+│   ├── App.css                     # Minimal root style overrides
+│   ├── App.tsx                     # Top-level Router layout and modal container
+│   ├── index.css                   # Tailwind entry file, custom color classes & webfonts
+│   └── main.tsx                    # React 19 application mount point
+├── .gitignore                      # Standard git ignores (node_modules, dist, etc.)
+├── .oxlintrc.json                  # Oxlint configuration
+├── index.html                      # HTML template with metadata, favicon, and Google Fonts
+├── package.json                    # Dependencies, scripts, and package metadata
+├── postcss.config.js               # PostCSS configuration with Tailwind and Autoprefixer
+├── README.md                       # Public-facing repository documentation
+├── tailwind.config.js              # Custom Tailwind theme: saffron, warmcream, font families
+├── tsconfig.app.json               # Frontend TypeScript compiler settings (relaxed module syntax)
+├── tsconfig.json                   # Root TypeScript project reference
+├── tsconfig.node.json              # TypeScript compiler settings for Vite config
+└── vite.config.ts                  # Vite build settings, base URL, and Vitest configuration
+
+================================================================================
+5. TYPESCRIPT DOMAIN MODELS (src/types/recipe.ts)
+================================================================================
+export type MealTime =
+  | 'breakfast' | 'morning-snack' | 'lunch' | 'evening-snack' | 'dinner' | 'night'
+  | 'sweets' | 'dessert' | 'drinks' | 'healthy' | 'snacks' | 'starters'
+  | 'festival-special' | 'summer-special';
+
+export type DietType =
+  | 'vegetarian' | 'vegan' | 'jain' | 'no-onion-garlic' | 'gluten-free';
+
+export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard';
+
+export interface Ingredient {
+  name: string;
+  quantity: number | null;
+  unit: string;
+  scalable: boolean;
+  notes?: string;
+  isRange?: boolean;
+  rangeMax?: number;
+  approximate?: boolean;
+  optional?: boolean;
+  section?: string;
+}
+
+export interface CookingStep {
+  stepNumber: number;
+  title?: string;
+  instruction: string;
+  timerSeconds?: number;
+  tip?: string;
+  image?: string;
+}
+
+export interface NutritionInfo {
+  calories: number;
+  protein: string;
+  carbs: string;
+  fat: string;
+  fiber?: string;
+}
+
+export interface Recipe {
+  id: string;
+  slug: string;
+  title: string;
+  hindiTitle?: string;
+  regionalTitle?: string;
+  description: string;
+  image: string;
+  cuisine: string[];
+  mealTimes: MealTime[];
+  categories: string[];
+  diet: DietType[];
+  servings: number;
+  prepTime: number;
+  cookTime: number;
+  totalTime: number;
+  difficulty: DifficultyLevel;
+  rating: number;
+  reviewCount: number;
+  featured?: boolean;
+  trending?: boolean;
+  isFestivalSpecial?: boolean;
+  festivalName?: string;
+  ingredients: Ingredient[];
+  instructions: CookingStep[];
+  tips: string[];
+  substitutions?: string[];
+  storage?: string;
+  scalingNotes?: string;
+  tags: string[];
+  author?: string;
+  nutrition?: NutritionInfo;
+  videoUrl?: string;
+}
+
+export interface ShoppingItem {
+  id: string;
+  recipeId?: string;
+  recipeTitle?: string;
+  name: string;
+  quantityString: string;
+  completed: boolean;
+  addedAt: number;
+}
+
+export interface RecipeFilterState {
+  searchQuery: string;
+  mealTime: MealTime | 'all';
+  cuisine: string;
+  category: string;
+  diet: string;
+  maxTime: number | null;
+  difficulty: string;
+  sortBy: 'popular' | 'newest' | 'fastest' | 'alphabetical';
+}
+
+export type SupportedLanguage = 'en' | 'te' | 'ta';
+
+================================================================================
+6. DYNAMIC RECIPE QUANTITY ADAPTER ENGINE
+================================================================================
+Located in src/utils/quantityScaler.ts and src/utils/fractionFormatter.ts.
+
+Formula:
+  ratio = targetServings / originalServings
+  scaledQuantity = baseQuantity * ratio
+
+Fractions:
+  0.125 -> 1/8, 0.25 -> 1/4, 0.33 -> 1/3, 0.5 -> 1/2, 0.66 -> 2/3, 0.75 -> 3/4
+  Mixed numbers: 1.5 -> 1 1/2, 2.25 -> 2 1/4
+
+Unit Pluralization:
+  - Invariables: g, kg, ml, l, liter, litres, pinch, to taste, as needed, sprig
+  - Pluralized when qty > 1: cup -> cups, clove -> cloves, piece -> pieces, tablespoon -> tablespoons, teaspoon -> teaspoons
+
+Special Cases:
+  - Non-scalable/qualitative items (scalable: false or quantity: null) remain untouched.
+  - Range scaling: both bounds scale proportionally (2-3 tbsp for 4 becomes 4-6 tbsp for 8).
+  - Batch guidance warning triggers if ratio > 3.0 or targetServings >= 16.
+
+================================================================================
+7. RECIPE CATALOG INVENTORY (56 RECIPES ACROSS 7 COLLECTIONS)
+================================================================================
+- breakfast.ts (10): Masala Dosa, Idli Sambar, Medu Vada, Poha, Rava Upma, Aloo Paratha, Pesarattu, Poori Masala, Appam with Vegetable Stew, Onion Uttapam
+- lunch.ts (10): Paneer Butter Masala, Hyderabadi Veg Dum Biryani, Traditional South Indian Sambar, Dal Tadka, Chana Masala (Chole), Kerala Avial, Palak Paneer, Punjabi Rajma Masala, Lemon Rice (Chitranna), Bisi Bele Bath
+- dinner.ts (8): Dal Makhani, Phulka / Roti, Moong Dal Khichdi, Kadai Paneer, Gujarati Methi Thepla, Matar Paneer, Vegetable Pulao, Paneer Bhurji
+- snacks.ts (8): Punjabi Samosa, Onion Pakoda, Batata Vada / Bonda, Mumbai Sev Puri, Crispy Aloo Tikki, Crispy Gobi 65, Masala Corn Chat, Dahi Vada
+- sweets.ts (8): Gulab Jamun, Rasmalai, Authentic Mysore Pak, Royal Rice Kheer, Gajar Ka Halwa, Kaju Katli, Besan Ladoo, Motichoor Ladoo
+- drinks.ts (6): South Indian Filter Coffee, Masala Chai, Sweet Mango Lassi, Spiced Masala Chaas, Badam Milk, Shikanji (Spiced Lemonade)
+- healthy.ts (6): Moong Dal Chilla, Oats Vegetable Upma, Sprouted Moong Salad, Ragi Dosa, Quinoa Khichdi, Creamy Palak Soup
+
+Queries exported in src/data/recipes/index.ts:
+  allRecipes, getRecipeBySlug, getRecipesByMealTime, getFeaturedRecipes, getTrendingRecipes, getLatestRecipes, getRelatedRecipes, allCuisines, allCategories
+
+================================================================================
+8. COMPONENT INVENTORY & RESPONSIBILITIES
+================================================================================
+- Header.tsx: Navigation, search trigger (Ctrl+K), language picker (en/te/ta), theme toggle, favorites badge, hamburger menu.
+- Footer.tsx: Brand links, attribution, social links. Uses custom inline SVG for GitHub icon.
+- MobileBottomNav.tsx: 5-tab sticky bottom navigation for mobile/tablet screens.
+- RecipeCard.tsx: Reusable card supporting 5 variants (standard, featured, horizontal, compact, trending).
+- RecipeFilters.tsx: Multi-filter sidebar with cuisine, mealtime, diet, time, difficulty, and sort options.
+- ServingAdapter.tsx: Quantity scaling counter, quick presets (1, 2, 4, 6, 8, 10, 12, 16, 20), copy, print, shopping list.
+- IngredientList.tsx: Checklist of scaled ingredients grouped by recipe section with tap-to-cross state.
+- CookingSteps.tsx: Numbered step cards with countdown timers.
+- CookingMode.tsx: Distraction-free full-screen cooking assistant with confetti celebration upon completion.
+- SearchModal.tsx: Instant search modal (Ctrl+K) with debounced search, suggestions, and recent queries.
+- ShoppingListModal.tsx: Grocery basket modal with WhatsApp formatted export.
+- RecipeBuilderModal.tsx: JSON schema editor, importer, and exporter.
+
+================================================================================
+9. STATE MANAGEMENT & LOCAL STORAGE SCHEMA
+================================================================================
+Managed in src/context/AppContext.tsx via React Context.
+LocalStorage Keys:
+  - cookfood_favorites: string[] (recipe IDs)
+  - cookfood_shopping_list: ShoppingItem[]
+  - cookfood_theme: 'light' | 'dark'
+  - cookfood_language: 'en' | 'te' | 'ta'
+  - cookfood_recent: string[] (last 12 viewed IDs)
+  - cookfood_servings_<recipeId>: number (stored serving preference)
+
+================================================================================
+10. DESIGN SYSTEM & TAILWIND CONFIGURATION
+================================================================================
+Colors:
+  - Saffron (Brand): 500: #f97316, 600: #f58206 (primary), 700: #d96f04
+  - Warmcream: 50: #fdfcf9 (light page background), 100: #f7f2ea (card background)
+Fonts:
+  - Serif: Playfair Display, Georgia, serif
+  - Sans: system-ui, -apple-system, sans-serif
+Shadows:
+  - shadow-card, shadow-card-hover
+
+================================================================================
+11. ROUTING ARCHITECTURE (src/App.tsx)
+================================================================================
+HashRouter is strictly required for GitHub Pages:
+  #/                     -> HomePage
+  #/recipes              -> RecipesPage
+  #/category/:category   -> CategoryPage
+  #/recipe/:slug         -> RecipeDetailsPage
+  #/favorites            -> FavoritesPage
+  #/search               -> SearchPage
+  *                      -> Navigate to="/"
+
+================================================================================
+12. CI/CD & GITHUB PAGES DEPLOYMENT
+================================================================================
+Workflow: .github/workflows/deploy.yml
+- Triggers on push to main branch.
+- Runs npm ci, then npm run build (outputting to dist/ with base: '/CookFood/').
+- Deploys to gh-pages branch using JamesIves/github-pages-deploy-action@v4 with permissions: contents: write.
+
+================================================================================
+13. CRITICAL GOTCHAS & DEVELOPER RULES
+================================================================================
+1. Do NOT import Github from lucide-react (it does not exist in ^1.66.0). Use inline SVG in Footer.tsx.
+2. In browser timers, use ReturnType<typeof setInterval>, NEVER NodeJS.Timeout.
+3. In tsconfig.app.json, keep verbatimModuleSyntax: false and noUnusedLocals: false.
+4. vite.config.ts base MUST remain '/CookFood/'.
+5. Always keep HashRouter so GitHub Pages refreshes do not 404.
+6. Run npm test to verify all 15 Vitest tests pass before committing.
+
+================================================================================
+14. DEVELOPER QUICK-START COMMANDS
+================================================================================
+npm install       # Install dependencies
+npm run dev       # Start Vite local development server
+npm test          # Run Vitest test suite (15 tests)
+npm run build     # Type-check and build production bundle
+npm run preview   # Preview built bundle locally
+npm run lint      # Run Oxlint linter

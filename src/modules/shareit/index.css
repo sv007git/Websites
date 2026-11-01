@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* =========================================================================
+     DARK THEME (Default)
+     ========================================================================= */
+  :root {
+    --color-surface-950: 9 13 22;      /* #090d16 Deep dark page background */
+    --color-surface-900: 15 23 42;     /* #0f172a Card/panel background */
+    --color-surface-800: 30 41 59;     /* #1e293b Input/secondary elements */
+    --color-surface-700: 51 65 85;     /* #334155 Borders */
+    --color-surface-600: 71 85 105;    /* #475569 Subtle borders */
+    --color-surface-500: 100 116 139;  /* #64748b Placeholder */
+    --color-surface-400: 148 163 184;  /* #94a3b8 Muted text */
+    --color-surface-300: 203 213 225;  /* #cbd5e1 Secondary text */
+    --color-surface-200: 226 232 240;  /* #e2e8f0 Primary body text */
+    --color-surface-100: 248 250 252;  /* #f8fafc Bright text */
+    --color-surface-50:  255 255 255;  /* #ffffff Pure white */
+
+    --color-brand-300: 124 195 253;   /* #7cc3fd */
+    --color-brand-400: 56 189 248;    /* #38bdf8 */
+    --color-brand-500: 12 135 235;    /* #0c87eb Primary azure blue */
+    --color-brand-600: 2 107 201;     /* #026bc9 Hover blue */
+    --color-brand-700: 3 85 163;      /* #0355a3 Deep blue */
+  }
+
+  /* =========================================================================
+     LIGHT THEME
+     Clean modern light palette with crisp contrast
+     ========================================================================= */
+  html.light {
+    --color-surface-950: 248 250 252; /* #f8fafc Light page canvas */
+    --color-surface-900: 255 255 255; /* #ffffff Pure white card/panel */
+    --color-surface-800: 241 245 249; /* #f1f5f9 Subtle secondary pill/input */
+    --color-surface-700: 226 232 240; /* #e2e8f0 Crisp light borders */
+    --color-surface-600: 148 163 184; /* #94a3b8 */
+    --color-surface-500: 100 116 139; /* #64748b Muted labels */
+    --color-surface-400: 71 85 105;   /* #475569 Muted text */
+    --color-surface-300: 51 65 85;    /* #334155 Secondary dark text */
+    --color-surface-200: 30 41 59;    /* #1e293b Dark body text */
+    --color-surface-100: 15 23 42;    /* #0f172a Deepest headings */
+    --color-surface-50:  2 6 23;      /* #020617 High-contrast dark */
+
+    --color-brand-300: 2 132 199;     /* #0284c7 */
+    --color-brand-400: 3 105 161;     /* #0369a1 */
+    --color-brand-500: 12 135 235;    /* #0c87eb */
+    --color-brand-600: 2 107 201;     /* #026bc9 */
+    --color-brand-700: 3 85 163;      /* #0355a3 */
+  }
+
+  /* =========================================================================
+     BLACK & WHITE (B&W) MONOCHROME THEME
+     Pure AMOLED #000000 Black, Stark #ffffff White & #27272a Razor Borders
+     ========================================================================= */
+  html.theme-bw {
+    --color-surface-950: 0 0 0;       /* #000000 Pure AMOLED black canvas */
+    --color-surface-900: 10 10 10;    /* #0a0a0a Dark card/panel background */
+    --color-surface-800: 20 20 22;    /* #141416 Elevated surfaces */
+    --color-surface-700: 39 39 42;    /* #27272a Razor monochrome border */
+    --color-surface-600: 82 82 91;    /* #52525b Neutral border */
+    --color-surface-500: 113 113 122; /* #71717a Neutral 500 */
+    --color-surface-400: 161 161 170; /* #a1a1aa Subtle white text */
+    --color-surface-300: 212 212 216; /* #d4d4d8 Secondary white text */
+    --color-surface-200: 244 244 245; /* #f4f4f5 Primary white text */
+    --color-surface-100: 255 255 255; /* #ffffff Stark white text */
+    --color-surface-50:  255 255 255; /* #ffffff */
+
+    --color-brand-300: 255 255 255;   /* #ffffff Stark white accents */
+    --color-brand-400: 255 255 255;   /* #ffffff */
+    --color-brand-500: 255 255 255;   /* #ffffff Solid White CTA */
+    --color-brand-600: 228 228 231;   /* #e4e4e7 Hover light zinc */
+    --color-brand-700: 212 212 216;   /* #d4d4d8 Active zinc */
+  }
+
+  body {
+    background-color: rgb(var(--color-surface-950));
+    color: rgb(var(--color-surface-100));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    min-height: 100dvh;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+/* =========================================================================
+   BLACK & WHITE MONOCHROME THEME ACCENTS & CONTRAST
+   ========================================================================= */
+html.theme-bw .bg-brand-500,
+html.theme-bw [class*="bg-brand-500"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html.theme-bw .bg-brand-500:hover,
+html.theme-bw [class*="bg-brand-500"]:hover {
+  background-color: #e4e4e7 !important;
+  color: #000000 !important;
+}
+
+html.theme-bw .bg-brand-500 svg,
+html.theme-bw [class*="bg-brand-500"] svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+html.theme-bw h1,
+html.theme-bw h2,
+html.theme-bw h3,
+html.theme-bw h4 {
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html.theme-bw .shadow-glow-brand {
+  box-shadow: 0 0 0 2px #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+/* Light Mode specific shadows and borders */
+html.light .bg-surface-900 {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Safe Area and Viewport Adjustments */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Video element rendering */
+video {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

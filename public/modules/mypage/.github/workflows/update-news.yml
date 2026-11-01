@@ -1,0 +1,42 @@
+name: Daily TV9 Telugu News Sync
+
+on:
+  schedule:
+    # Run every 30 mins between 05:30 AM IST and 11:30 PM IST (00:00 - 18:00 UTC)
+    - cron: '*/30 0-18 * * *'
+    # Run every 2 hours during late night (19:00 - 23:00 UTC)
+    - cron: '0 19-23/2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Latest TV9 Telugu News
+        run: node scripts/fetch-tv9-news.js
+
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add latest_news.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(news): auto-update TV9 Telugu 4 Min 24 Headlines [skip ci]"
+            git push origin main
+            git push origin main:gh-pages --force
+          else
+            echo "No new updates to latest_news.json"
+          fi

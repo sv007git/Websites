@@ -1,0 +1,279 @@
+================================================================================
+ANTIGRAVITY MASTER PROJECT CONTEXT & ARCHITECTURAL SPECIFICATION
+PROJECT: Sanatana Pujas & Pariharams (సనాతన పూజా విధి & పరిహారాలు)
+REPOSITORY: https://github.com/sv007git/Pujas
+LIVE DEPLOYMENT: https://sv007git.github.io/Pujas/
+DEFAULT LANGUAGE: English ('en') with 1-click toggle to Telugu ('te')
+DEFAULT THEME: Dark ('dark' - Temple Night) with toggle to Light ('light' - Vedic Ashram)
+================================================================================
+
+1. PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+This repository hosts a zero-build, client-side, production-ready Single Page 
+Application (SPA) designed for Hindu spiritual practitioners, families, and priests.
+It provides complete, step-by-step guidance for 21 authentic Vedic rituals, 
+classified systematically by Phase of Life (Shodasha Samskaras), major annual 
+Vratams & Festivals, Astrological Dosha Pariharams, and Daily Observances.
+
+Key capabilities:
+- Full audio recitation (Priest Mode & Per-Step Chanting) via Web Speech API.
+- Offline synthesized brass Temple Bell (Ghanta Dhwani) & Conch (Shankham) via Web Audio API.
+- Bilingual instant switching (English <-> Telugu) across all UI strings, mantras, 
+  checklists, and procedures without page reload.
+- Interactive Samagri (Materials) Checklist with progress tracker and 1-click WhatsApp export.
+- Dynamic Personalized Vedic Sankalpam Generator computing ongoing Samvatsara, Ayana, 
+  Ritu, Masa, Paksha, Tithi, and Vasara for the user's Gotra, Nakshatra, and Name.
+- Screen Wake Lock API to prevent phone/tablet screens from sleeping during rituals.
+- Dual theme support (Dark Temple Night and Light Vedic Ashram Marble).
+- Deployed directly on GitHub Pages using static branch hosting.
+
+
+2. WORKSPACE DIRECTORY & FILE STRUCTURE
+--------------------------------------------------------------------------------
+c:\Users\HARISH VYAS\Projects\Pujas\
+│
+├── index.html                  # Single Page Application entry point (Navbar, Hero, Modals, Audio dock)
+├── 404.html                    # GitHub Pages SPA redirect fallback
+├── .nojekyll                   # Instructs GitHub Pages to bypass Jekyll processing
+├── .gitignore                  # Git exclusions (OS files, logs, temp data)
+├── README.md                   # Public repository documentation and setup guide
+├── antigravity_prompt.txt      # THIS FILE: Complete architectural context for Antigravity AI
+│
+├── css/
+│   └── style.css               # Complete styling system: CSS custom properties for dark/light themes,
+│                               # typography (Cinzel & Noto Sans Telugu), responsive layouts, wave animation
+│
+└── js/
+    ├── app.js                  # Main UI controller: DOM queries, event listeners, rendering, filtering
+    ├── audio-player.js         # PujaAudioPlayer class: Web Speech API TTS + Web Audio API synthesizer
+    ├── sankalpam.js            # Sankalpam engine: Astronomical calendar calculation & verse interpolation
+    ├── storage.js              # Storage namespace: LocalStorage wrapper for settings, bookmarks, checklists
+    │
+    └── data/
+        ├── panchang-data.js    # Vedic calendar reference: 60 Samvatsaras, 2 Ayanas, 6 Ritus, 12 Masas,
+        │                       # 2 Pakshas, 16 Tithis, 7 Vasaras, 27 Nakshatras, 16 Gotras in EN & TE
+        ├── pujas-life-phase.js # 9 Life Phase Samskaras (Seemantham to Shraddha)
+        ├── pujas-vratams.js    # 5 Major Vratams & Festivals (Satyanarayana, Varalakshmi, Shivaratri, etc.)
+        ├── pujas-pariharams.js # 5 Astrological Dosha Remedies (Navagraha, Rahu-Ketu, Kuja, Santana, Dristi)
+        ├── pujas-daily.js      # 2 Daily Observances (Nitya Deeparadhana, Shiva Pradosha Vrata)
+        └── pujas-data.js       # Master aggregated array PUJAS_DATA = [...life, ...vratams, ...pariharams, ...daily]
+
+
+3. DATA SCHEMA & SPECIFICATION
+--------------------------------------------------------------------------------
+Each ritual in the database adheres to the following unified JavaScript Object schema:
+
+{
+  id: string,                      // Unique slug (e.g., 'seemantham', 'satyanarayana-vratam')
+  category: string,                // 'life-phase' | 'vratam-festival' | 'pariharam' | 'daily'
+  phase: string,                   // English phase (e.g., 'Pregnancy & Motherhood', 'Infancy & Childhood')
+  phaseTe: string,                 // Telugu phase (e.g., 'గర్భధారణ & మాతృత్వ దశ')
+  deity: string,                   // English presiding deity name
+  deityTe: string,                 // Telugu presiding deity name
+  title: {
+    en: string,                    // English display title
+    te: string                     // Telugu display title
+  },
+  subtitle: {
+    en: string,                    // English brief description
+    te: string                     // Telugu brief description
+  },
+  significance: {
+    en: string,                    // Full spiritual, scriptural, and psychological significance
+    te: string
+  },
+  bestTiming: {
+    en: {
+      season: string,              // Month / Season window
+      tithi: string,               // Auspicious lunar tithi
+      timeOfDay: string,           // Pratah, Madhyahna, Sandhya, Nishitha
+      details: string              // Astrological notes, nakshatras, horai
+    },
+    te: {
+      season: string,
+      tithi: string,
+      timeOfDay: string,
+      details: string
+    }
+  },
+  samagri: [                       // Array of required materials
+    {
+      nameEn: string,              // English item name
+      nameTe: string,              // Telugu item name
+      quantity: string,            // Exact measure/count
+      optional: boolean,           // Whether item can be skipped if unavailable
+      noteEn?: string,             // Purpose/usage notes
+      noteTe?: string
+    }
+  ],
+  steps: [                         // Sequential steps of the ritual
+    {
+      stepNumber: number,          // 1-based step counter
+      title: { en: string, te: string },
+      description: { en: string, te: string },
+      mantra: {
+        sanskrit: string,          // Devanagari or Telugu Sanskrit script
+        transliteration: string,   // IAST / English phonetic pronunciation
+        scriptTe: string           // Pure Telugu script rendering
+      },
+      meaning: { en: string, te: string }, // Theological & literal translation
+      audioText: { en: string, te: string } // Text formatted for clean TTS speech
+    }
+  ]
+}
+
+COMPLETE LIST OF 21 IMPLEMENTED PUJAS (PUJAS_DATA):
+--------------------------------------------------------------------------------
+Category 1: Life Phase (Shodasha Samskaras - 9 rituals)
+  1. 'seemantham'          : Seemantham (Simantonnayana - Baby shower & womb protection)
+  2. 'namakaranam'         : Namakaranam (Naming Ceremony & Cradle ritual)
+  3. 'annaprashana'        : Annaprashana (First Solid Food & Destiny Choice Test)
+  4. 'aksharabhyasa'       : Aksharabhyasa (Vidyarambha - Education Initiation & Saraswati Puja)
+  5. 'upanayanam'          : Upanayanam (Sacred Thread Investiture & Gayatri Upadesham)
+  6. 'vivaham'             : Vivaha Samskara (Vedic Wedding, Kanyadanam, Mangalasutra, Saptapadi)
+  7. 'grihapravesham'      : Griha Pravesham (New Home Consecration, Go Puja, Vastu Shanti)
+  8. 'shashtiabdapoorthi'  : Shashtiabdapoorthi (60th Birthday Ugraratha Shanti & Vow Renewal)
+  9. 'antyeshti-shraddha'  : Pitru Karyam & Shraddha (Ancestral Tarpana & Pinda Dana)
+
+Category 2: Vratams & Major Festivals (5 rituals)
+  10. 'satyanarayana-vratam'    : Sri Satyanarayana Swamy Vratam (Navagraha Mandala & 5 Katha Chapters)
+  11. 'varalakshmi-vratam'      : Sri Varalakshmi Vratam (9-Knot Toram Puja & Sumangali Blessings)
+  12. 'vinayaka-chavithi'       : Vinayaka Chavithi (21 Sacred Leaf Ekavimshati Patra & Katha)
+  13. 'maha-shivaratri'         : Maha Shivaratri (Panchamrita Lingabhishekam & Bilvashtaka Archana)
+  14. 'deepavali-lakshmi-kubera': Deepavali Lakshmi-Kubera Puja (Diyas, Coin Archana, Ledger Puja)
+
+Category 3: Astrological Dosha Pariharams (5 rituals)
+  15. 'navagraha-shanti'        : Navagraha Shanti & Peeda Pariharam (Sade Sati, Ashtama Shani, 9 Grains)
+  16. 'rahu-ketu-sarpa-dosha'   : Rahu-Ketu & Sarpa Dosha Nivarana (Kala Sarpa, Naga Pratima Abhishekam)
+  17. 'kuja-dosha-pariharam'    : Kuja Dosha (Manglik) Pariharam (Subrahmanya Puja & Red Lentil Dana)
+  18. 'santana-gopala-puja'     : Santana Gopala Swamy Puja (Balakrishna Cradle & 108 Mantra Japa)
+  19. 'dristi-dosha-nivarana'   : Balarishta & Dristi (Evil Eye) Dosha Nivarana (Salt/Chili Waving)
+
+Category 4: Daily Observances (2 rituals)
+  20. 'nitya-deeparadhana-puja' : Nitya Deeparadhana & Griha Deva Puja (Dawn/Dusk Lamp, Achamanam, Ghanta)
+  21. 'shiva-pradosha-puja'     : Shiva Pradosha Vrata Puja (Trayodashi Twilight Nandi-Shiva Worship)
+
+
+4. SUBSYSTEM ARCHITECTURES
+--------------------------------------------------------------------------------
+A. AUDIO & ACOUSTIC ENGINE (js/audio-player.js)
+   - Class: PujaAudioPlayer
+   - Synthesizer (Web Audio API):
+     * Temple Bell (playTempleBell()): Dual-oscillator bank with harmonics at 640Hz, 852Hz, 
+       1280Hz, 1920Hz, 2560Hz. Exponential gain decay ramp simulating genuine bell bronze.
+     * Sacred Conch (playConchSound()): 210Hz sawtooth wave sweeping to 260Hz then settling 
+       to 245Hz, shaped by a 450Hz->750Hz->400Hz lowpass filter with slow attack.
+   - Text-To-Speech (Web Speech API):
+     * Matches best available voice: looks for 'te-IN' / 'te' for Telugu, or 'en-IN' (Indian English) 
+       for English to ensure Sanskrit phonemes are pronounced authentically.
+     * Speed Rate: Selectable 0.75x (meditative), 0.9x (optimal/default), 1.0x, 1.2x.
+     * Queue Management: priest mode walks sequentially through intro, steps, mantras, and meanings, 
+       emitting callbacks to highlight the active step on screen and scrolling into view.
+
+B. PANCHANGA & SANKALPAM ENGINE (js/sankalpam.js & js/data/panchang-data.js)
+   - Object: Sankalpam
+   - getCalendarElements(date):
+     * Computes Samvatsara from Jovian 60-year cycle: (year - 4 + 60) % 60.
+     * Identifies Uttarayana (Jan-June) vs. Dakshinayana (July-Dec).
+     * Derives Ritu: Vasanta, Greeshma, Varsha, Sharad, Hemanta, Shishira.
+     * Approximates lunar Masa, Paksha (Shukla/Krishna), Tithi (1-15), and Vasara (Day).
+   - generate(userProfile, pujaName, lang):
+     * Injects Gotram, Nakshatram, Devotee Name, and Spouse Name into classical Vedic formula.
+     * Outputs: sanskritText, transliteration, meaningTe, meaningEn.
+
+C. CLIENT PERSISTENCE (js/storage.js)
+   - Object: Storage
+   - LocalStorage Keys:
+     * 'pujas_settings'          : { language: 'en', theme: 'dark', speechRate: 0.9, soundEffects: true }
+     * 'pujas_bookmarks'         : Array<string> of bookmarked puja IDs
+     * 'pujas_checklists'        : Object mapping pujaId -> Array<number> of checked item indices
+     * 'pujas_sankalpam_profile' : { gotra, nakshatra, name, spouseName, city }
+
+D. UI ORCHESTRATION & DOM CONTROLLER (js/app.js)
+   - All DOM query selectors are declared at the very top of DOMContentLoaded to eliminate 
+     JavaScript Temporal Dead Zone (TDZ) ReferenceErrors.
+   - Defensive checks (if (element)) exist on all event listeners and UI updates.
+   - Live Search: Instant real-time search filtering across both English and Telugu titles, 
+     subtitles, and deities simultaneously.
+   - WhatsApp Exporter: Formats checklist into WhatsApp markdown and opens wa.me deep-link.
+   - Screen Wake Lock: Requests 'screen' lock via navigator.wakeLock with fallback alert.
+
+
+5. STYLING SYSTEM & DESIGN TOKENS (css/style.css)
+--------------------------------------------------------------------------------
+Themes are toggled via the [data-theme] attribute on the <html> tag:
+
+[data-theme="dark"] (Temple Night):
+  --bg-primary: #0b0d11       (Deep obsidian)
+  --bg-secondary: #131720     (Midnight charcoal)
+  --bg-surface: #1b202c       (Elevated card surface)
+  --bg-card: #202737
+  --border-color: rgba(245, 158, 11, 0.18) (Vedic gold outline)
+  --text-primary: #f8fafc
+  --text-secondary: #94a3b8
+  --accent-saffron: #f97316
+  --accent-gold: #fbbf24
+  --accent-kumkum: #f43f5e
+  --glow-gold: 0 0 20px rgba(251, 191, 36, 0.25)
+
+[data-theme="light"] (Vedic Ashram White):
+  --bg-primary: #fbf9f5       (Warm alabaster/marble)
+  --bg-secondary: #f4efe6     (Ivory stone)
+  --bg-surface: #ffffff
+  --bg-card: #ffffff
+  --border-color: rgba(217, 119, 6, 0.22)
+  --text-primary: #1c1917     (Deep charcoal)
+  --text-secondary: #57534e
+  --accent-saffron: #ea580c
+  --accent-gold: #d97706
+  --accent-kumkum: #be123c
+
+Typography:
+  English UI & Headings : 'Cinzel', serif & system sans-serif
+  Telugu Script & Texts : 'Noto Sans Telugu', 'Ramabhadra', sans-serif
+
+
+6. SCRIPT INCLUSION ORDER (index.html)
+--------------------------------------------------------------------------------
+Scripts must be imported in strict dependency order:
+1.  js/data/panchang-data.js    (Defines PANCHANG_DATA)
+2.  js/data/pujas-life-phase.js (Defines PUJAS_LIFE_PHASE)
+3.  js/data/pujas-vratams.js    (Defines PUJAS_VRATAMS)
+4.  js/data/pujas-pariharams.js (Defines PUJAS_PARIHARAMS)
+5.  js/data/pujas-daily.js      (Defines PUJAS_DAILY)
+6.  js/data/pujas-data.js       (Aggregates PUJAS_DATA)
+7.  js/storage.js               (Defines Storage)
+8.  js/audio-player.js          (Defines PujaAudioPlayer)
+9.  js/sankalpam.js             (Defines Sankalpam)
+10. js/app.js                   (Attaches DOM listeners, renders UI)
+
+
+7. CRITICAL ARCHITECTURAL RULES & GOTCHAS
+--------------------------------------------------------------------------------
+1. GITHUB PAGES DEPLOYMENT:
+   - This repository is configured to deploy via the static branch method:
+     Branch: 'main', Folder: '/' (root)
+   - DO NOT create a '.github/workflows/deploy.yml' file unless the repository settings 
+     at https://github.com/sv007git/Pujas/settings/pages have explicitly been changed from 
+     'Deploy from a branch' to 'GitHub Actions'. Pushing a workflow while in 'branch' mode 
+     triggers an unnecessary 404 Action failure.
+   - A mirror branch 'gh-pages' is also maintained:
+     git push origin main
+     git push origin main:gh-pages
+
+2. JAVASCRIPT SCOPING:
+   - All shared data arrays and helper classes must be defensively assigned to both 
+     window and globalThis (e.g., if (typeof window !== 'undefined') window.X = X;).
+   - In app.js, never access DOM elements or call functions that reference DOM element 
+     variables before their const declarations.
+
+3. DEFAULT LANGUAGE:
+   - The default language MUST always remain English ('en').
+   - When the user clicks the language toggle ('🌐 తెలుగు'), the entire application shifts 
+     to Telugu. Clicking '🌐 English' switches back.
+
+4. STATIC PATH RESILIENCY:
+   - All asset references (CSS, JS, icons) in index.html and 404.html MUST use relative 
+     paths (e.g., 'css/style.css', 'js/app.js') rather than absolute root slashes ('/css/style.css')
+     so that the app functions seamlessly whether hosted at root or under a subpath like /Pujas/.
+================================================================================

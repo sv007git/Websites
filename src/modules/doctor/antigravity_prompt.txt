@@ -1,0 +1,299 @@
+================================================================================
+ANTIGRAVITY PROJECT KNOWLEDGE BASE & SYSTEM DOCUMENTATION: DOCTOR
+================================================================================
+File: antigravity_prompt.txt
+Project: Doctor — Holistic Medical Anatomy & Disease Intelligence
+Repository: https://github.com/sv007git/Doctor
+Live Site: https://sv007git.github.io/Doctor/
+Owner: sv007git
+Last Updated: November 2026
+Architecture: Zero-Dependency Pure Client-Side Static Web Application (HTML5 / Vanilla ES6+ / CSS3)
+Deployment: GitHub Pages via GitHub Actions (Branch: main, Environment: github-pages)
+
+--------------------------------------------------------------------------------
+1. PROJECT PURPOSE & CORE FUNCTIONALITY
+--------------------------------------------------------------------------------
+"Doctor" is an interactive, accessibility-focused, pure black-and-white monochrome
+medical exploration dashboard. It bridges modern clinical medicine (Allopathy) with
+classical holistic healing sciences (Ayurveda, Mudras, Yoga & Pranayama, Micronutrient
+Dietary Deficiencies, and Circadian Lifestyle Protocols).
+
+Core capabilities:
+1. Interactive Vector Anatomy Visualizer:
+   - 3 Demographics: Adult Male (Man), Adult Female (Woman), Pediatric Infant (Baby).
+   - 2 Anatomical Layers:
+     * Internals (visceral organs: Brain, Heart, Lungs, Liver, Stomach, Kidneys, Pancreas, Intestines, Spine, Reproductive Systems).
+     * Externals (sensory & musculoskeletal: Head/Scalp, Eyes, Ears, Nose, Mouth/Throat, Neck/Thyroid, Chest/Breasts, Core, Hands, Hips, Legs, Feet, Skin).
+   - Dynamic vector SVG with hover outlines, active pulsating glows, zoom/pan controls, and floating tooltips.
+2. Top 10 Diseases per Body Part:
+   - Exactly 25 anatomical parts × 10 diseases = 250 fully clinically researched conditions.
+   - Each condition features an 8-pillar holistic protocol:
+     * Root causes & pathophysiology
+     * Primary prevention strategies
+     * Lifestyle habits & circadian diet
+     * Modern allopathic pharmacology & treatments
+     * Classical Ayurveda (doshas, single herbs, polyherbal formulations, therapies)
+     * Therapeutic hand mudras (exact finger technique, duration, benefits)
+     * Yoga asanas & pranayama breathwork
+     * Vitamin/mineral deficiencies & bioavailable whole food sources
+     * Integrated daily morning-to-night routine
+3. English Voice Narration Engine:
+   - Web Speech API synthesis prioritizing natural English voices (Google, Microsoft, Apple).
+   - Web Audio API dual-oscillator acoustic chimes on organ & disease selection.
+   - Live CSS waveform animation bar.
+   - Narration speed controls (0.8x, 1.0x, 1.15x, 1.3x) and auto-speech mode on click.
+4. Pure Black & White Monochrome Design System:
+   - Ultra high-contrast palette (#000000 dark mode default, #ffffff paper light mode).
+   - Keyboard shortcuts: 'T' for theme, 'Space' for audio toggle, 'Esc' to clear search/modals.
+   - Dedicated print stylesheet for clean 1-page PDF/paper protocol exports.
+
+--------------------------------------------------------------------------------
+2. PROJECT DIRECTORY & FILE STRUCTURE
+--------------------------------------------------------------------------------
+c:\Users\HARISH VYAS\Projects\Doctor\
+│
+├── .nojekyll                 # Empty file telling GitHub Pages to bypass Jekyll processing
+├── index.html                # Semantic HTML5 single-page application shell (9.9 KB)
+├── README.md                 # Project documentation, catalog table & deployment guide (14.7 KB)
+├── antigravity_prompt.txt    # This file - Master knowledge base for AI agents & developers
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # GitHub Actions CI/CD deploying directly to GitHub Pages (877 bytes)
+│
+├── assets/
+│   └── favicon.svg           # High-contrast monochrome medical cross & holistic circle icon
+│
+├── css/
+│   └── styles.css            # Complete design system, dark/light theme, layout & print styles (20.8 KB, 957 lines)
+│
+└── js/
+    ├── data.js               # Master database: 25 parts, 250 conditions, 8 holistic pillars (692.9 KB, 10,238 lines)
+    ├── audio.js              # Web Speech TTS + Web Audio acoustic chime sound engine (8.3 KB, 269 lines)
+    ├── anatomy-svg.js        # Dynamic SVG anatomy viewer, hotspot manager & zoom/pan (39.0 KB, 685 lines)
+    └── app.js                # Main application controller, search, UI state & event bus (21.7 KB, 648 lines)
+
+--------------------------------------------------------------------------------
+3. ARCHITECTURAL CONTRACTS & SCRIPT DEPENDENCIES
+--------------------------------------------------------------------------------
+The scripts in index.html are loaded synchronously in the following order:
+1. js/data.js         -> Declares global `const ANATOMY_DATA = { demographics, layers, parts }`
+2. js/audio.js        -> Declares class `HolisticAudioEngine`, instantiates `window.AudioEngine`
+3. js/anatomy-svg.js  -> Declares class `AnatomySVGViewer`
+4. js/app.js          -> Declares class `HolisticApp`, instantiates `window.App` on DOMContentLoaded
+
+There are NO package managers, NO npm builds, NO bundlers, and NO third-party CDNs.
+Everything runs natively in all modern browsers (Chrome, Edge, Firefox, Safari).
+
+--------------------------------------------------------------------------------
+4. DATA SCHEMA (js/data.js)
+--------------------------------------------------------------------------------
+Global variable: `ANATOMY_DATA`
+
+Structure:
+{
+  demographics: {
+    man: { id: "man", label: "Adult Male", icon: "👨", description: "..." },
+    woman: { id: "woman", label: "Adult Female", icon: "👩", description: "..." },
+    baby: { id: "baby", label: "Pediatric / Infant", icon: "👶", description: "..." }
+  },
+  layers: {
+    internals: { id: "internals", label: "Internals", icon: "🩻", description: "..." },
+    externals: { id: "externals", label: "Externals", icon: "👤", description: "..." }
+  },
+  parts: {
+    [partId]: {
+      id: string,                   // e.g. "brain", "heart", "eyes", "skin"
+      name: string,                 // e.g. "Brain & Nervous System"
+      layer: "internals"|"externals",
+      applicableTo: string[],       // ["man", "woman"] or ["man", "woman", "baby"]
+      category: string,             // e.g. "Neurological / Cognitive Core"
+      summary: string,              // Clinical summary paragraph
+      topDiseases: [                // EXACTLY 10 disease objects per part!
+        {
+          id: string,               // e.g. "brain-1", "heart-4"
+          name: string,             // e.g. "Ischemic Stroke"
+          category: string,         // e.g. "Cerebrovascular Event"
+          severity: string,         // e.g. "Critical Acute"
+          cause: string,            // Pathophysiology & clinical causes
+          prevention: string,       // Actionable prevention protocols
+          lifestyle: string,        // Sleep, diet, hydration, exercise
+          medicines: string,        // Allopathic therapeutics (tPA, statins, etc.)
+          ayurveda: {
+            dosha: string,          // e.g. "Vata aggravated"
+            herbs: string,          // e.g. "Brahmi, Ashwagandha, Shankhpushpi"
+            formulations: string,   // e.g. "Saraswatarishta, Yogendra Ras"
+            therapy: string         // e.g. "Shirodhara, Nasya"
+          },
+          mudras: {
+            primary: string,        // e.g. "Apana Vayu Mudra"
+            technique: string,      // Exact finger placement
+            duration: string,       // e.g. "15-30 minutes twice daily"
+            benefits: string        // Energetic and physical benefits
+          },
+          yoga: {
+            asanas: string[],       // e.g. ["Viparita Karani", "Shavasana"]
+            pranayama: string[],    // e.g. ["Nadi Shodhana", "Bhramari"]
+            cautions: string        // Clinical contraindications
+          },
+          vitamins: {
+            deficiencies: string,   // e.g. "Vitamin B12, B6, Folate, Vitamin D3"
+            dietarySources: string  // Bioavailable whole food sources
+          },
+          holisticIntegration: string // Complete dawn-to-dusk regimen
+        }
+      ]
+    }
+  }
+}
+
+The 25 Parts cataloged:
+- Internals (12): brain, heart, lungs, liver, stomach, kidneys, pancreas, intestines, spine, reproductive_male, reproductive_female, baby_internals.
+- Externals (13): head_scalp, eyes, ears, nose_sinuses, mouth_throat, neck_thyroid, chest_breasts, abdomen_core, hands_wrists, hips_pelvis, knees_legs, feet_ankles, skin.
+Total diseases: 250.
+
+--------------------------------------------------------------------------------
+5. ANATOMY VECTOR SVG ENGINE (js/anatomy-svg.js)
+--------------------------------------------------------------------------------
+Class: `AnatomySVGViewer(containerId)`
+- Container: `#anatomy-canvas-container`
+- ViewBox: `0 0 500 800`
+- Zoom level: Min `0.75`, Max `2.5`, Default `1.0` (with `#zoom-level-display`)
+- Interactive element: `<g class="anatomy-hotspot" data-part-id="...">`
+- Event callbacks:
+  * `onPartSelect(partId)`: Fired on click or Enter key.
+  * `onPartHover(partId, mouseEvent, boundingClientRect)`: Fired on mouseenter/mousemove/mouseleave.
+- SVG Layers:
+  * `getInternalSVG()`: Generates anatomical vector shapes for man/woman/baby internal organs.
+  * `getExternalSVG()`: Generates anatomical vector shapes for surface body regions.
+- SVG styling:
+  * `.organ-fill`: semi-transparent monochrome fill with glowing stroke.
+  * `.anatomy-hotspot:hover .organ-fill`: increased stroke width + drop-shadow.
+  * `.anatomy-hotspot.is-active .organ-fill`: prominent monochrome highlight + filter glow.
+
+--------------------------------------------------------------------------------
+6. AUDIO SPEECH & ACOUSTIC SYNTHESIZER (js/audio.js)
+--------------------------------------------------------------------------------
+Class: `HolisticAudioEngine`
+Global instance: `window.AudioEngine`
+- TTS Engine: Window `speechSynthesis` API
+  * Voice filter: Selects best available English voice (`en-US`, `en-GB`, etc.).
+  * Speech rate: Supported speeds `0.8`, `1.0`, `1.15`, `1.3`.
+  * Auto-Speech toggle: `autoSpeak` boolean (reads overview or disease protocol on click).
+  * State hook: `onStateChange({ isPlaying, isPaused, text })`.
+- Sound Effects: Window `AudioContext` / `webkitAudioContext`
+  * Dual-sine wave oscillators generating clean, ambient acoustic chimes without audio files.
+  * Chime types: "select" (880Hz -> 1320Hz), "organ" (440Hz -> 660Hz), "disease" (523.25Hz -> 783.99Hz), "error".
+- Script Generators:
+  * `generatePartScript(part, demographicLabel)`: Concise ~30 second spoken organ summary.
+  * `generateDiseaseScript(disease)`: Structured spoken clinical and holistic overview covering cause, prevention, allopathy, ayurveda, mudra, yoga, and vitamins.
+
+--------------------------------------------------------------------------------
+7. APPLICATION CONTROLLER & UI EVENT BUS (js/app.js)
+--------------------------------------------------------------------------------
+Class: `HolisticApp`
+Global instance: `window.App`
+
+Key State Properties:
+- `demographic`: "man" | "woman" | "baby"
+- `layer`: "internals" | "externals"
+- `selectedPartId`: Current active anatomical part ID (defaults to "brain")
+- `selectedDiseaseId`: Current selected disease ID (or null)
+- `searchQuery`: Current search string
+- `theme`: "dark" | "light" (stored in localStorage: `doctor_theme`)
+
+DOM Element ID Map:
+- Header & Global Controls:
+  * `[data-demographic]`: Switcher buttons for Man, Woman, Baby
+  * `[data-layer]`: Switcher buttons for Internals, Externals
+  * `#theme-toggle-btn`: Theme switcher button (Dark/Light)
+- Left Anatomy Panel:
+  * `#anatomy-canvas-container`: Host for the SVG canvas
+  * `#zoom-in-btn`, `#zoom-out-btn`, `#zoom-reset-btn`: SVG zoom toolbar
+  * `#zoom-level-display`: Displays zoom percentage (e.g. "100%")
+  * `#anatomy-tooltip`: Floating cursor tooltip
+- Right Content Panel:
+  * `#disease-search-input`: Real-time fuzzy search input across diseases, herbs, mudras, vitamins
+  * `#search-clear-btn`: Clear search button
+  * `#part-overview-card`: Active anatomical part summary card
+  * `#diseases-count-badge`: Displays count (e.g. "10 Conditions")
+  * `#top-diseases-grid`: Container rendering the 10 disease cards
+  * `#holistic-protocol-container`: Container rendering the deep-dive 8-column protocol
+- Bottom Audio Bar:
+  * `#audio-visualizer`: Waveform bar container (.is-playing animates 6 bars)
+  * `#audio-now-playing-title`: Text label for currently narrating topic
+  * `#global-audio-play-btn`: Play/Pause/Resume narration button
+  * `#global-audio-stop-btn`: Stop narration button
+  * `#auto-speak-toggle-btn`: Toggle auto-speech on selection
+  * `#audio-rate-select`: Speed dropdown (0.8x, 1.0x, 1.15x, 1.3x)
+
+Keyboard Shortcuts:
+- `T` or `t`: Toggle Black/White theme.
+- `Space`: Pause / Resume audio narration (when not typing in an input).
+- `Esc`: Close deep-dive protocol modal or clear search.
+
+--------------------------------------------------------------------------------
+8. DESIGN SYSTEM & CSS TOKENS (css/styles.css)
+--------------------------------------------------------------------------------
+Root CSS Variables (Dark Theme - Default):
+- `--bg-primary`: #000000
+- `--bg-secondary`: #0a0a0a
+- `--bg-card`: #121212
+- `--bg-card-hover`: #181818
+- `--bg-active`: #222222
+- `--bg-overlay`: rgba(0, 0, 0, 0.85)
+- `--text-primary`: #ffffff
+- `--text-secondary`: #a1a1aa
+- `--text-muted`: #71717a
+- `--text-inverse`: #000000
+- `--border-color`: #27272a
+- `--border-light`: #3f3f46
+- `--border-active`: #ffffff
+
+Light Theme ([data-theme="light"]):
+- Inverts colors cleanly to clinical paper-white (#ffffff) and crisp black text (#000000).
+
+Print Stylesheet (@media print):
+- Hides headers, canvas, and audio controls.
+- Formats holistic disease protocols as crisp high-contrast printable medical sheets.
+
+--------------------------------------------------------------------------------
+9. GITHUB PAGES DEPLOYMENT & CI/CD (.github/workflows/deploy.yml)
+--------------------------------------------------------------------------------
+The repository is deployed to GitHub Pages at:
+https://sv007git.github.io/Doctor/
+
+GitHub Actions configuration:
+- Trigger: Push to `main` branch or manual `workflow_dispatch`.
+- Permissions required: `contents: read`, `pages: write`, `id-token: write`.
+- Actions used:
+  * `actions/checkout@v4`
+  * `actions/configure-pages@v5`
+  * `actions/upload-pages-artifact@v3` (uploads root '.')
+  * `actions/deploy-pages@v4` (deploys artifact to `github-pages` environment)
+- Requirement: In repo Settings > Pages, Build and Deployment source must be set to "GitHub Actions" (build_type: "workflow").
+
+--------------------------------------------------------------------------------
+10. TESTING & VERIFICATION COMMANDS
+--------------------------------------------------------------------------------
+1. Check JavaScript syntax:
+   node -c js/data.js
+   node -c js/audio.js
+   node -c js/anatomy-svg.js
+   node -c js/app.js
+
+2. Validate data counts & schema integrity:
+   node -e "const fs = require('fs'); let c = fs.readFileSync('js/data.js', 'utf8').replace('const ANATOMY_DATA =', 'global.ANATOMY_DATA ='); eval(c); console.log('Parts:', Object.keys(global.ANATOMY_DATA.parts).length, 'Total Diseases:', Object.values(global.ANATOMY_DATA.parts).reduce((acc, p) => acc + p.topDiseases.length, 0));"
+   (Should output: Parts: 25 Total Diseases: 250)
+
+3. Run locally:
+   python -m http.server 8000
+   Open: http://localhost:8000
+
+4. Check live deployment status:
+   curl -I https://sv007git.github.io/Doctor/
+   (Should return HTTP/1.1 200 OK)
+
+================================================================================
+END OF ANTIGRAVITY MASTER PROMPT DOCUMENT
+================================================================================

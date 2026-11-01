@@ -1,0 +1,17 @@
+{
+  "name": "NCERT Cartoon Academy",
+  "short_name": "NCERT Comics",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "description": "Learn all NCERT English Medium subjects from Class 1 to 12 in cartoon comic strips with English audio narration.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "64x64 128x128 256x256",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

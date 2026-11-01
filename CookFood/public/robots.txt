@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sv007git.github.io/CookFood/sitemap.xml

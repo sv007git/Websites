@@ -1,0 +1,412 @@
+================================================================================
+ANTIGRAVITY MASTER PROMPT & REUSABLE PROJECT SPECIFICATION
+================================================================================
+Project Name: ERP (Dual-Stack Production-Grade Enterprise Business Suite)
+Workspace Root: C:\Users\HARISH VYAS\Projects\ERP
+Live Frontend (GitHub Pages): https://sv007git.github.io/ERP/
+GitHub Repository: https://github.com/sv007git/ERP
+Supabase Project: https://clobwkkjltlhxishhyhm.supabase.co
+Platform Operating System: Windows (PowerShell compatible commands mandatory)
+Branding Mandate: Strictly "ERP" everywhere. Never use "Dreams ERP" or "Dream ERP".
+================================================================================
+
+TABLE OF CONTENTS:
+1. Executive Summary & Core Architectural Mission
+2. Repositories, Live URLs & Environment Credentials
+3. Complete Directory Structure & Workspace Layout
+4. Reference Codebases & Source Integration Map
+5. Data Dictionary & Relational Entity Schemas
+6. Core Business Invariants & Transaction Rules
+7. Module-by-Module Feature Implementation Details
+8. Currency Configuration & Localization Guide
+9. Exact Commands: Running, Building, Testing & Deploying
+10. Known Issues, Solved Edge Cases & Troubleshooting Guide
+11. Instructions for New Antigravity Sessions
+
+--------------------------------------------------------------------------------
+1. EXECUTIVE SUMMARY & CORE ARCHITECTURAL MISSION
+--------------------------------------------------------------------------------
+The project is a dual-stack, production-ready ERP and CRM enterprise business management
+suite developed on Windows. It contains two completely independent, runnable implementations
+that produce identical business outcomes:
+
+Variant A (Web Frontend + Supabase):
+- Location: C:\Users\HARISH VYAS\Projects\ERP\variant-a-supabase
+- Stack: React 18/19, TypeScript, Vite, Tailwind CSS, Lucide React, Supabase JS Client.
+- State Architecture: Optimistic LocalErpStore backed by browser localStorage with
+  automatic asynchronous cloud synchronization to Supabase PostgreSQL.
+- Deployment: Hosted as a static single page application on GitHub Pages (`gh-pages` branch)
+  at https://sv007git.github.io/ERP/ with source maintained on the `main` branch.
+
+Variant B (PHP + MySQL / SQLite):
+- Location: C:\Users\HARISH VYAS\Projects\ERP\variant-b-php-mysql
+- Stack: Clean PSR-4 layered architecture (Core, Services, Controllers, Models) in PHP 8.2+
+  (portable runtime PHP 8.5.12 bundled under `tools/php`).
+- Database: Dual-driver PDO supporting MySQL 8.0+ and zero-admin SQLite 3 (`database/erp.sqlite`).
+- Strict Invariants: Double-entry accounting service (sum(debit) == sum(credit)) and
+  immutable stock movement ledger entries.
+
+--------------------------------------------------------------------------------
+2. REPOSITORIES, LIVE URLS & ENVIRONMENT CREDENTIALS
+--------------------------------------------------------------------------------
+GitHub Repository:
+  Remote Origin: https://github.com/sv007git/ERP
+  Branch `main`: Master source code, documentation, specs, and tests.
+  Branch `gh-pages`: Compiled static production assets from `variant-a-supabase/dist`.
+  Live Production Site: https://sv007git.github.io/ERP/
+
+Supabase Backend:
+  Project URL: https://clobwkkjltlhxishhyhm.supabase.co
+  Public Anon Key:
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsb2J3a2tqbHRsaHhpc2hoeWhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwOTUzNDIsImV4cCI6MjEwODY3MTM0Mn0.1Nr57cJLY5fImP1GNcSOpMarCdc9xdE4KCe1kpNe4OM
+  SQL Editor: https://supabase.com/dashboard/project/clobwkkjltlhxishhyhm/sql
+  RLS Policy Script: `variant-a-supabase/supabase/migrations/20261027000004_allow_anon_demo.sql`
+  (Enables anon & authenticated full CRUD so client demo operations can sync to cloud).
+
+Default Tenant / Organization:
+  ID: 00000000-0000-0000-0000-000000000001 (or org-falcon-llp-001)
+  Name: Falcon LLP
+  Default Currency: USD ($)
+
+--------------------------------------------------------------------------------
+3. COMPLETE DIRECTORY STRUCTURE & WORKSPACE LAYOUT
+--------------------------------------------------------------------------------
+C:\Users\HARISH VYAS\Projects\ERP
+│
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml             # GitHub Actions automated Pages build & deploy
+│
+├── docs/                                # Authoritative Architecture & Audit Reports
+│   ├── PROJECT_AUDIT.md                 # Baseline review & inventory
+│   ├── FEATURE_GAP_ANALYSIS.md          # 10-module matrix vs references
+│   ├── SOURCE_CODE_INTEGRATION_MAP.md   # Architectural patterns mapped to sources
+│   ├── ARCHITECTURE.md                  # System diagrams & transactional invariants
+│   └── IMPLEMENTATION_PLAN.md           # Step-by-step rebuild roadmap
+│
+├── shared-specifications/               # Shared Domain Models & Contracts
+│   ├── PRODUCT_REQUIREMENTS.md          # Product specs for all modules
+│   ├── ARCHITECTURE.md                  # High-level architecture & tenancy
+│   ├── DATABASE_DICTIONARY.md           # Relational schema dictionary (20 tables)
+│   ├── ROLE_PERMISSION_MATRIX.md        # RBAC permissions per role
+│   ├── API_CONTRACTS.md                 # REST API envelopes & error formats
+│   ├── DESIGN_SYSTEM.md                 # Typography, spacing, colors, badges
+│   ├── FEATURE_PARITY.md                # Feature parity between Variant A & B
+│   └── DECISIONS.md                     # Architecture Decision Records (ADR 001-006)
+│
+├── shared-tests/
+│   └── verify_acceptance.py             # Master cross-variant Python test runner
+│
+├── deployment/
+│   ├── VARIANT_B_DEPLOYMENT.md          # Windows IIS / Apache / Nginx PHP guide
+│   └── SECURITY_AND_PATCHING.md         # Production patching & zero-downtime SOP
+│
+├── tools/                               # Zero-Admin Portable Runtimes
+│   └── php/                             # Portable PHP 8.5.12 x64 + composer.phar
+│
+├── variant-a-supabase/                  # Variant A: React 19 + TypeScript + Supabase
+│   ├── index.html                       # SPA HTML entry point (Branded "ERP")
+│   ├── package.json                     # Vite, React, Tailwind, Lucide, Vitest
+│   ├── vite.config.ts                   # Base URL './' for GitHub Pages relative assets
+│   ├── dist/                            # Production build output
+│   ├── public/
+│   │   └── assets/img/                  # 90+ production avatars, icons & product images
+│   │       ├── avatar/                  # avatar-01.jpg .. avatar-29.jpg
+│   │       ├── product/                 # product-1.png .. product-16.png
+│   │       └── icons/                   # SVG brand & payment badges
+│   ├── src/
+│   │   ├── main.tsx                     # React DOM root
+│   │   ├── App.tsx                      # Master layout, navigation & route tab switcher
+│   │   ├── App.test.ts                  # 9 automated Vitest unit tests (100% pass)
+│   │   ├── index.css                    # Tailwind CSS directives & color variables
+│   │   ├── types/
+│   │   │   └── database.ts              # Full TypeScript entity definitions
+│   │   ├── lib/
+│   │   │   └── supabase.ts              # Supabase Client + LocalErpStore fallback cache
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── Header.tsx           # Global search (Cmd+K), Theme toggle, Notifications, Org switcher
+│   │   │   │   └── Sidebar.tsx          # 9-module left navigation with active indicators
+│   │   │   └── crm/
+│   │   │       ├── DealPipeline.tsx     # 5-stage interactive Chevron Pipeline Bar
+│   │   │       └── ActivityTimeline.tsx # 5-tab collaboration workstation (Activities, Notes, Calls, Files, Email)
+│   │   └── pages/
+│   │       ├── CrmDashboard.tsx         # CRM KPIs, leads table, win probabilities
+│   │       ├── DealsPage.tsx            # Full deal workstation (08_Deals_Activities.jpg)
+│   │       ├── SalesPage.tsx            # Revenue trends, invoice creation & payment settle
+│   │       ├── InventoryDashboard.tsx   # Stock tracking, receive +10, dispatch -5
+│   │       ├── ProcurementPage.tsx      # PO management, supplier spend analytics
+│   │       ├── FinancePage.tsx          # Double-entry ledger inspection & journal entries
+│   │       ├── HrmDashboard.tsx         # Attendance logging, leave approval balance deduction
+│   │       ├── ProjectsPage.tsx         # Projects grid, progress tracking, add project
+│   │       └── SupportPage.tsx          # Ticket volume, SLA compliance, add/resolve ticket
+│   └── supabase/
+│       └── migrations/
+│           ├── 20261027000001_initial_schema.sql
+│           ├── 20261027000002_rls_policies.sql
+│           ├── 20261027000003_seed_data.sql
+│           └── 20261027000004_allow_anon_demo.sql
+│
+├── variant-b-php-mysql/                 # Variant B: PHP 8.5+ + MySQL / SQLite
+│   ├── public/
+│   │   ├── index.php                    # Front controller & router
+│   │   └── install.php                  # Web installer with auto-locking security
+│   ├── database/
+│   │   ├── erp.sqlite                   # Active SQLite 3 database
+│   │   ├── migrate.php                  # CLI migration runner
+│   │   ├── seed.php                     # CLI database seeder
+│   │   ├── migrations/                  # 001_foundation.sql .. 005_inventory.sql
+│   │   └── seeders/DatabaseSeeder.php   # Comprehensive demo seed data
+│   ├── src/
+│   │   ├── Core/                        # Database PDO, Router, Request, Response, Session
+│   │   ├── Services/                    # AccountingService, InventoryService, HrmService
+│   │   ├── Controllers/                 # WebController, ApiController
+│   │   └── Models/                      # Lead, Deal, Product, Employee, Invoice, etc.
+│   └── tests/
+│       └── run_tests.php                # 11 automated PHP CLI tests (100% pass)
+│
+└── [Reference Repositories - Ignored in Git]:
+    ├── erpgosaas-98/                    # WorkDo Laravel ERP SaaS reference
+    ├── idurar-erp-crm-4.1.1/            # Node/React CRM reference
+    ├── icehrm-36.0.1/                   # IceHrm HR reference (Elastic License 2.0 isolated)
+    ├── hrms-16.52.0/                    # Frappe HRMS reference
+    ├── espocrm-10.0.11/                 # EspoCRM reference
+    ├── erpnext-16.52.1/                 # Frappe ERPNext reference
+    └── crm-1.89.2/                      # Frappe CRM reference
+
+--------------------------------------------------------------------------------
+4. REFERENCE CODEBASES & SOURCE INTEGRATION MAP
+--------------------------------------------------------------------------------
+Clean-room implementation rules are strictly applied:
+1. IDURAR ERP/CRM (MIT): Primary reference for CRM pipeline stages, lead conversion,
+   and customer invoice generation.
+2. ERPNext 16.52.1 (GPL v3): Architectural reference for double-entry general ledger
+   (`gl_entries`), chart of accounts, and immutable stock ledger (`stock_ledger_entries`).
+3. IceHrm 36.0.1 (Elastic License 2.0): Relational concepts for leave balance deduction
+   and employee attendance. Clean-room re-implemented in PHP and TypeScript without
+   copying source files directly.
+4. HRMS 16.52.0 (Frappe HRMS): Monthly payroll processing and salary calculations.
+5. EspoCRM 10.0.11: Support ticket lifecycle, priority metrics, and audit log architecture.
+6. ERPGo SaaS 9.8 (erpgosaas-98/erpgo): WorkDo Laravel module architecture for quotes,
+   delivery notes, and procurement PO workflows.
+7. Local Crawled Web References (`C:\My Web Sites\erp\dreamserp.dreamstechnologies.com\tailwind`):
+   Sourced 90+ real product pictures, user avatars, and SVG icons.
+
+--------------------------------------------------------------------------------
+5. DATA DICTIONARY & RELATIONAL ENTITY SCHEMAS
+--------------------------------------------------------------------------------
+All tables include `organization_id` for multi-tenant isolation. Primary keys use UUIDs
+or prefixed identifiers (e.g., `del-020`, `prd-020`).
+
+Core Entities:
+1. `organizations`: id, name, slug, currency (default 'USD'), created_at.
+2. `users` / `user_profiles`: id, organization_id, full_name, email, role, status.
+3. `leads`: id, organization_id, code (#LED0020), name, company_name, status, source, value.
+4. `deals`: id, organization_id, code (#DEL0020), name, company_name, address, stage,
+   probability, deal_value, status (Open/Won/Lost), priority (Low/Medium/High), due_date,
+   follow_up_date, tags, projects, owners, contacts, last_modified, modified_by.
+5. `deal_activities`: id, deal_id, type (activity/meeting/call/note/task/file/email),
+   title, description, date_group (Today/28 Sep 2025/27 Sep 2025), priority, reminder,
+   assigned_to, user_name, created_at.
+6. `products`: id, organization_id, code (#PRD0020), name, sku, category, brand, unit,
+   quantity, selling_price, purchase_price, reorder_level, status (In Stock/Out of Stock).
+7. `stock_ledger_entries`: id, organization_id, product_id, warehouse_id, voucher_type,
+   qty_change (+10 / -5), balance_after, created_at. (IMMUTABLE).
+8. `warehouses`: id, organization_id, code, name, contact_person, capacity, current_utilization_pct.
+9. `invoices`: id, organization_id, invoice_number (#INV0020), customer_name, invoice_date,
+   total_amount, paid_amount, status (Pending/Paid/Partially Paid).
+10. `payments`: id, organization_id, invoice_id, amount, payment_date, payment_method, reference_no.
+11. `chart_of_accounts`: id, organization_id, code, name, type (Asset/Liability/Equity/Income/Expense).
+12. `gl_entries`: id, organization_id, posting_date, account_code, account_name, debit,
+    credit, voucher_type, voucher_id, remarks. (BALANCED DEBIT == CREDIT).
+13. `employees`: id, organization_id, employee_code (EMP-001), full_name, email,
+    department_name, position, salary, leave_balance, status.
+14. `attendance_records`: id, organization_id, employee_id, date, clock_in, clock_out, status.
+15. `leave_requests`: id, organization_id, employee_id, leave_type, start_date, end_date,
+    days_count, reason, status (Pending/Approved/Rejected).
+16. `purchase_orders`: id, organization_id, po_number (#POD0020), supplier_name, category,
+    order_date, delivery_date, total_amount, ordered_qty, delivered_qty, status.
+17. `projects`: id, organization_id, code (#PRO0020), name, description, progress (0-100),
+    team_leader, team_members, deadline, status.
+18. `tickets`: id, organization_id, code (#TKT0020), customer_name, subject, priority,
+    status (Open/Pending/Resolved/Closed), assigned_to, created_at, last_updated.
+19. `audit_logs`: id, organization_id, action, entity_type, entity_id, actor_id, metadata, created_at.
+
+--------------------------------------------------------------------------------
+6. CORE BUSINESS INVARIANTS & TRANSACTION RULES
+--------------------------------------------------------------------------------
+1. Double-Entry Accounting Invariant:
+   - For any financial posting, sum(Debit) - sum(Credit) == 0.00.
+   - Enforced in `AccountingService.php` and verified by Python acceptance tests.
+2. Immutable Stock Movement Ledger:
+   - Physical quantities are never directly updated without an append-only row in
+     `stock_ledger_entries`.
+   - Disallow dispatches when current stock < dispatch quantity.
+3. Atomic Leave Balance Deductions:
+   - When approving leave for N days, employee `leave_balance` is decremented by exactly N.
+4. Tenant Scoping:
+   - Every read and write is scoped to `organization_id`. Cross-tenant data leakage is
+     prevented via Supabase RLS policies and PHP SQL parameterized bindings.
+
+--------------------------------------------------------------------------------
+7. MODULE-BY-MODULE FEATURE IMPLEMENTATION DETAILS
+--------------------------------------------------------------------------------
+1. CRM Dashboard (`CrmDashboard.tsx`):
+   - Key Metrics: Total Leads ($125K), Deals Closed ($154K), Opportunities ($185K), Revenue ($210K).
+   - Leads generated chart, Recent Leads list with status tags, Deals Pipeline breakdown.
+   - Modals: `+ Add Lead`, `+ New Deal`.
+2. Detailed Deals Workstation (`DealsPage.tsx` matching `08_Deals_Activities.jpg`):
+   - Left Sidebar Card: Deal value ($2,511,145), Win probability (80%), Due date, Follow up,
+     Source (`Paid Campaign`), Owners, Tags (`Collab`, `VIP`), Priority selector (`High`),
+     Linked projects (`Dreams Food`, `Craftesty`), Contacts (`Robert Cosper`), and Last Modified.
+   - Interactive Chevron Pipeline Bar: 5 stages (`Qualify To Buy`, `Contact Made`,
+     `Presentation`, `Proposal Made`, `Appointment`), updates probability & state on click.
+   - 5-Tab Collaboration Center:
+     - `Activities`: Date-grouped chronological timeline (`Today`, `28 Sep 2025`, `27 Sep 2025`),
+       inline dropdowns for Reminder, Task Priority, and Assigned To, plus Add Activity modal.
+     - `Notes`: Internal memorandum composer with verified note history.
+     - `Calls`: Phone call logger with call duration and outcome tracking.
+     - `Files`: File attachment manager with upload and download capabilities.
+     - `Email`: Direct email composer with thread history and delivery status tags.
+3. Sales Dashboard (`SalesPage.tsx` matching `07_Sales_Dashboard.jpg`):
+   - Revenue Trends bar chart with time horizon filter (`1D`, `7D`, `1M`, `1Y`).
+   - Sales by Region breakdown (Australia Territory, Global volume).
+   - Recent Sales Activity table (`Invoices`, `Sales Orders`, `Credit Notes`, `Sales Quotes`).
+   - Modal: `+ Create Invoice` with customer name, total amount, and date.
+   - Interactive `Settle Paid` action to update invoice balance.
+4. Procurement Dashboard (`ProcurementPage.tsx` matching `05_Procurement_Dashboard.jpg`):
+   - Metrics: Total Spend ($2,145), Purchase Orders count (128), On-time delivery rate (88%).
+   - Top Suppliers spend allocation, Spend by Category donut.
+   - Recent Procurement Activity table tracking ordered vs delivered quantities.
+   - Modal: `+ New Purchase Order`.
+5. Projects Dashboard (`ProjectsPage.tsx` matching `09_Projects.jpg`):
+   - Card grid layout with project codes (#PRO0020), progress bars, team leaders, avatars, and deadlines.
+   - Modal: `+ Add New Project`.
+6. Support Dashboard (`SupportPage.tsx` matching `06_Support_Dashboard.jpg`):
+   - Ticket Volume chart, SLA Breaches donut (70% compliant / 30% breached).
+   - All Tickets queue with Priority badges (`Low`, `Medium`, `High`) and `Resolve` action.
+   - Modal: `+ Add Tickets`.
+7. HRM Dashboard (`HrmDashboard.tsx` matching `03_HRM_Dashboard.jpg`):
+   - Total Workforce stats (1,284), Attendance summary, Run Payroll action.
+   - Interactive `Clock In` action and `Approve Leave` with atomic balance decrement.
+   - Modal: `+ Add Employee`.
+8. Inventory Dashboard (`InventoryDashboard.tsx` matching `04_Inventory_Dashboard.jpg`):
+   - Total Stock counter, Valuation, Warehouse utilization meters.
+   - Interactive stock adjustments: `+ Receive 10` and `- Dispatch 5` with live feedback banner.
+   - Modal: `+ Add Product`.
+9. Finance & Ledger (`FinancePage.tsx`):
+   - Double-entry general ledger inspection, Journal Entries modal, Trial Balance.
+10. Global Controls:
+    - Global Search (`⌘K` / `Ctrl+K`) filtering across Deals, Products, Employees, Projects.
+    - Dark/Light mode theme toggle modifying root CSS classes.
+    - Notification tray with unread alert badges.
+    - Multi-tenant organization switcher (`Falcon LLP`).
+
+--------------------------------------------------------------------------------
+8. CURRENCY CONFIGURATION & LOCALIZATION GUIDE
+--------------------------------------------------------------------------------
+How Currency is Designed in the System:
+1. Database Level:
+   - In table `organizations`, the column `currency` stores the ISO 4217 code (default: 'USD').
+   - For multi-currency expansion, financial records (`invoices`, `gl_entries`, `deals`) store
+     both the monetary value and reference the tenant's currency code.
+2. Variant A (React / TypeScript):
+   - Entity definition in `types/database.ts`:
+     `export interface Organization { id: string; name: string; slug: string; currency: string; }`
+   - Formatting: Currently values are formatted using `$` symbol or `deal_value.toLocaleString()`.
+   - To change default currency globally in Variant A:
+     1. In `src/types/database.ts` or a global formatter `src/lib/currency.ts`:
+        Define `export const formatCurrency = (val: number, currency = 'USD') => ...`
+        using `Intl.NumberFormat('en-US', { style: 'currency', currency })`.
+     2. Update the organization record in `organizations` or `LocalErpStore` with the new code
+        (e.g., 'EUR', 'GBP', 'INR', 'AED').
+3. Variant B (PHP / MySQL):
+   - Stored in SQLite/MySQL `organizations.currency`.
+   - In `AccountingService.php` and `WebController.php`, formatted via `number_format($amount, 2)`
+     prefixed by the currency symbol resolved from the tenant's profile.
+
+--------------------------------------------------------------------------------
+9. EXACT COMMANDS: RUNNING, BUILDING, TESTING & DEPLOYING
+--------------------------------------------------------------------------------
+Always execute from PowerShell in `C:\Users\HARISH VYAS\Projects\ERP`.
+
+To Run Variant A (React Frontend):
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-a-supabase"
+  npm run dev
+  # Server starts on http://localhost:5173/
+
+To Build Variant A for Production:
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-a-supabase"
+  npm run build
+  # Compiles to variant-a-supabase/dist/ with relative asset links
+
+To Run Variant A Unit Tests (Vitest):
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-a-supabase"
+  npm run test
+  # 9 tests executed, 100% pass
+
+To Run Variant B (PHP Built-in Server):
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-b-php-mysql"
+  ..\tools\php\php.exe -S 127.0.0.1:8000 -t public
+  # Web application available at http://127.0.0.1:8000/
+
+To Run Variant B Migrations & Seeder:
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-b-php-mysql"
+  ..\tools\php\php.exe database/migrate.php
+  ..\tools\php\php.exe database/seed.php
+
+To Run Variant B Automated Tests:
+  cd "C:\Users\HARISH VYAS\Projects\ERP\variant-b-php-mysql"
+  ..\tools\php\php.exe tests/run_tests.php
+  # 11 acceptance tests executed, 100% pass
+
+To Run Master Cross-Variant Acceptance Suite:
+  cd "C:\Users\HARISH VYAS\Projects\ERP"
+  python shared-tests/verify_acceptance.py
+  # Verifies SQLite ledger balance, runs PHP tests, and executes Vitest suite.
+
+To Deploy Updated Frontend to GitHub Pages:
+  # Method: Deploy variant-a-supabase/dist contents to 'gh-pages' branch
+  $temp = Join-Path $env:TEMP "gh-pages-erp-deploy"
+  if (Test-Path $temp) { Remove-Item -Recurse -Force $temp }
+  git clone --branch gh-pages https://github.com/sv007git/ERP.git $temp
+  Copy-Item -Path "variant-a-supabase\dist\*" -Destination $temp -Recurse -Force
+  Push-Location $temp
+  git add .
+  git commit -m "deploy: update live ERP production build on gh-pages"
+  git push origin gh-pages
+  Pop-Location
+  Remove-Item -Recurse -Force $temp
+
+--------------------------------------------------------------------------------
+10. KNOWN ISSUES, SOLVED EDGE CASES & TROUBLESHOOTING GUIDE
+--------------------------------------------------------------------------------
+1. Supabase Error 42501 (Row-Level Security Violation):
+   - Cause: Public anon API requests cannot write to tables when policies require auth.uid().
+   - Solution: Run migration `20261027000004_allow_anon_demo.sql` in Supabase SQL Editor.
+   - Frontend Resilience: `LocalErpStore` uses optimistic caching in localStorage so the
+     user is never blocked even if the cloud network is down or RLS is restrictive.
+2. Large Reference Folders in Git:
+   - Ensure `.gitignore` ignores `crm-1.89.2/`, `erpnext-16.52.1/`, `espocrm-10.0.11/`,
+     `hrms-16.52.0/`, `icehrm-36.0.1/`, `idurar-erp-crm-4.1.1/`, `erpgosaas-98/`, and
+     `New folder/` to avoid committing hundreds of megabytes of third-party reference sources.
+3. Portable PHP on Windows:
+   - Standard PHP requires VC++ runtime DLLs.
+   - `tools/php/` contains portable PHP 8.5.12 along with necessary `vcruntime140.dll` and
+     `vcruntime140_1.dll` files so no administrative install (`winget` or MSI) is needed.
+4. Git Line Endings on Windows:
+   - PowerShell commands touch files with CRLF. Run tests and git commands with standard
+     Git for Windows handling.
+
+--------------------------------------------------------------------------------
+11. INSTRUCTIONS FOR NEW ANTIGRAVITY SESSIONS
+--------------------------------------------------------------------------------
+When starting or continuing a task in this workspace:
+- Read this file (`ANTIGRAVITY_PROMPT.txt`) first. It contains the exact truth of the codebase.
+- Do NOT re-analyze, crawl, or grep through the reference repositories unless specifically
+  asked to research a niche business rule.
+- Do NOT re-brand the application. The name is **ERP**.
+- Verify work using `python shared-tests/verify_acceptance.py`.
+================================================================================
+END OF ANTIGRAVITY MASTER SPECIFICATION
+================================================================================
