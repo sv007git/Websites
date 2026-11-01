@@ -2,7 +2,6 @@ import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { Header } from './components/Header/Header';
-import { Footer } from './components/Footer/Footer';
 import { MobileBottomNav } from './components/MobileBottomNav/MobileBottomNav';
 import { SearchModal } from './components/SearchBar/SearchModal';
 import { ShoppingListModal } from './components/ShoppingList/ShoppingListModal';
@@ -35,7 +34,6 @@ export const App: React.FC = () => {
             </Routes>
           </main>
 
-          <Footer />
           <MobileBottomNav />
 
           {/* Modals & Overlays */}
@@ -47,5 +45,3 @@ export const App: React.FC = () => {
     </AppProvider>
   );
 };
-
-export default App;

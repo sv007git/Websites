@@ -75,20 +75,6 @@ export function App() {
             <SupportPage />
           )}
         </main>
-
-        {/* Global ERP Footer */}
-        <footer className="h-12 border-t border-slate-200/80 bg-white flex items-center justify-between px-8 text-xs text-slate-500">
-          <div>
-            2026 © <span className="font-bold text-slate-700">ERP</span>. All Rights Reserved.
-          </div>
-          <div className="flex items-center space-x-4 text-[11px] text-slate-400">
-            <span>Dual-Stack Edition</span>
-            <span>•</span>
-            <span>Variant A: Supabase + React</span>
-            <span>•</span>
-            <span>Variant B: PHP + MySQL</span>
-          </div>
-        </footer>
       </div>
     </div>
   );

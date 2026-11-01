@@ -180,7 +180,7 @@ export const DoctorModule: React.FC = () => {
       </main>
 
       {/* Sticky English Audio Controller Bar */}
-      <footer className="audio-controller-bar" id="audio-controller-bar" role="region" aria-label="English Voice Audio Controller">
+      <div className="audio-controller-bar" id="audio-controller-bar" role="region" aria-label="English Voice Audio Controller">
         <div className="audio-info">
           <div className="audio-visualizer-wave" id="audio-visualizer" aria-hidden="true">
             <span className="wave-bar"></span>
@@ -219,7 +219,7 @@ export const DoctorModule: React.FC = () => {
             <option value="1.3">1.3x (Fast)</option>
           </select>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };

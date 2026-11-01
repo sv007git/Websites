@@ -195,16 +195,6 @@ export const LandingPage: React.FC = () => {
           </Card>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="mt-auto border-t py-8 px-4 sm:px-6 text-center text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">
-          InviteDecide © 2026 — Production-Ready Online Invitation, RSVP, Catering & Seating SaaS
-        </p>
-        <p className="mt-1">
-          Designed for Indian Weddings, Engagements, Anniversaries, Corporate Galas, and Family Functions.
-        </p>
-      </footer>
     </div>
   );
 };
