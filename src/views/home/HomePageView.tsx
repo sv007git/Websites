@@ -4,12 +4,10 @@
 // ================================================================================
 
 import React from 'react';
-import { Sparkles, Grid } from 'lucide-react';
+import { Search, X, Sparkles, Grid, Layers } from 'lucide-react';
 import { HomeViewModel } from '../../viewmodels/useHomeViewModel';
-import { HeroBannerView } from './HeroBannerView';
 import { CategoryFilterView } from './CategoryFilterView';
 import { WebsiteCardView } from './WebsiteCardView';
-import { RecentlyVisitedView } from './RecentlyVisitedView';
 import { FavoritesSectionView } from './FavoritesSectionView';
 
 export interface HomePageViewProps {
@@ -22,7 +20,6 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
     selectedCategory,
     favoriteIds,
     filteredWebsites,
-    recentWebsites,
     favoriteWebsites,
     categoryCounts,
     totalWebsitesCount,
@@ -35,22 +32,58 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Hero Banner */}
-      <HeroBannerView
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onClearSearch={clearSearch}
-        totalWebsites={totalWebsitesCount}
-      />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        {/* Top Control Bar: Title, Count Badge & Compact Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
+              <Layers className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Explore Websites
+                </h1>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200/80 dark:bg-midnight-800 text-slate-700 dark:text-slate-300">
+                  {totalWebsitesCount} Apps
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Independent super platforms unified with shared Supabase backend
+              </p>
+            </div>
+          </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        {/* Recently Visited Section */}
-        {recentWebsites.length > 0 && !searchQuery && (
-          <RecentlyVisitedView
-            recentWebsites={recentWebsites}
-            onOpenWebsite={openWebsite}
-          />
-        )}
+          {/* Compact In-Page Search Bar */}
+          <div className="relative w-full sm:w-80">
+            <div className="relative flex items-center rounded-2xl bg-white dark:bg-midnight-900 border border-slate-200 dark:border-midnight-700 p-1.5 shadow-xs focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
+              <Search className="w-4 h-4 text-slate-400 ml-2.5 mr-2 shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search platforms, features..."
+                className="w-full bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none pr-2"
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Category Filters Bar */}
+        <CategoryFilterView
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          categoryCounts={categoryCounts}
+        />
 
         {/* User Bookmarks / Favorites Section */}
         {favoriteWebsites.length > 0 && !searchQuery && selectedCategory === 'All' && (
@@ -61,24 +94,18 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
           />
         )}
 
-        {/* Category Filters Bar */}
+        {/* Main Grid Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Grid className="w-5 h-5 text-slate-500" />
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Explore All Websites
+            <Grid className="w-4 h-4 text-slate-500" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              {selectedCategory === 'All' ? 'All Super Platforms' : selectedCategory}
             </h2>
           </div>
           <span className="text-xs font-semibold text-slate-400">
             Showing {filteredWebsites.length} of {totalWebsitesCount}
           </span>
         </div>
-
-        <CategoryFilterView
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          categoryCounts={categoryCounts}
-        />
 
         {/* Main Grid of Website Cards */}
         {filteredWebsites.length > 0 ? (
