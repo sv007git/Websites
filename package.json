@@ -5,8 +5,10 @@
   "type": "module",
   "description": "Unified Multi-Website Super Platform hosting 12 independent applications with shared Supabase backend & universal multi-theme system",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/prebuild.js && vite",
+    "prebuild": "node scripts/prebuild.js",
     "build": "vite build",
+    "postbuild": "node scripts/postbuild.js",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "deploy": "gh-pages -d dist --dotfiles",

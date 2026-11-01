@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WEBSITES — Redirecting...</title>
+    <script type="text/javascript">
+      // GitHub Pages SPA Single Page App redirect script
+      // Preserves path and query parameters by redirecting to root with hash or path query
+      var pathSegmentsToKeep = 1; // for https://username.github.io/Websites/
+      var l = window.location;
+      var repoPath = '/' + l.pathname.split('/')[1];
+      if (l.pathname.split('/')[1] !== 'Websites') {
+        repoPath = '';
+      }
+      var cleanPath = l.pathname.slice(repoPath.length);
+      var newUrl = l.protocol + '//' + l.host + repoPath + '/#' + cleanPath + (l.search ? l.search : '') + l.hash;
+      window.location.replace(newUrl);
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/Websites/">WEBSITES</a>...</p>
+  </body>
+</html>
