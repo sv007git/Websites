@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
                   WEBSITES
                 </span>
                 <span className="block text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500 -mt-1">
-                  12 Super Platforms
+                  10 Super Platforms
                 </span>
               </div>
             </Link>
@@ -212,14 +212,6 @@ export const Header: React.FC = () => {
                 <span>ERP Suite</span>
               </Link>
               <Link
-                to="/site/ide"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-midnight-800 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-midnight-900"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Antigravity IDE</span>
-              </Link>
-              <Link
                 to="/site/invitedecide"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2.5 rounded-xl border border-slate-200 dark:border-midnight-800 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-midnight-900"
@@ -266,14 +258,6 @@ export const Header: React.FC = () => {
               >
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
                 <span>Cartoon Study</span>
-              </Link>
-              <Link
-                to="/site/webbuilder"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-midnight-800 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-midnight-900"
-              >
-                <span className="w-2 h-2 rounded-full bg-sky-500" />
-                <span>WebForge Studio</span>
               </Link>
             </div>
           </div>

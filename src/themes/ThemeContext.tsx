@@ -29,7 +29,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return localStorage.getItem(STORAGE_KEY_PALETTE) || 'rose';
   });
 
-  // Apply dark mode class to <html>
+  // Apply dark mode class to <html> and <body>
   useEffect(() => {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(STORAGE_KEY_DARK, String(isDarkMode));
@@ -37,19 +37,22 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     if (typeof document !== 'undefined') {
       if (isDarkMode) {
         document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
       }
     }
   }, [isDarkMode]);
 
-  // Apply palette data-theme attribute to <html>
+  // Apply palette data-theme attribute to <html> and <body>
   useEffect(() => {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(STORAGE_KEY_PALETTE, palette);
     }
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', palette);
+      document.body.setAttribute('data-theme', palette);
     }
   }, [palette]);
 

@@ -66,21 +66,6 @@ INSERT INTO public.websites (
     ARRAY['erp', 'crm', 'deals', 'invoicing', 'inventory', 'hrm', 'general-ledger']
 ),
 (
-    'ide',
-    'Antigravity IDE',
-    'AI-first mobile and web development environment with CodeMirror, Pyodide Python 3, and terminal emulator.',
-    'Code on any device with touch-friendly symbol toolbar, live sandboxed HTML/CSS/JS preview, client-side Python 3 execution via Pyodide Wasm, virtual filesystem with JSZip export, and autonomous AI pair programming.',
-    '/site/ide',
-    'Developer Tools',
-    'Code',
-    '#10b981',
-    true,
-    false,
-    5,
-    'ide',
-    ARRAY['ide', 'editor', 'python', 'wasm', 'codemirror', 'terminal', 'ai-copilot']
-),
-(
     'invitedecide',
     'InviteDecide',
     'Intelligent event participation, luxury invitation design, catering buffer calculator, and gate admission scanner.',
@@ -91,7 +76,7 @@ INSERT INTO public.websites (
     '#eab308',
     true,
     true,
-    6,
+    5,
     'invitedecide',
     ARRAY['wedding', 'events', 'rsvp', 'qr-code', 'seating-plan', 'catering', 'whatsapp']
 ),
@@ -106,7 +91,7 @@ INSERT INTO public.websites (
     '#d97706',
     true,
     false,
-    7,
+    6,
     'mypage',
     ARRAY['panchang', 'hindu-calendar', 'dharma', 'muhurtham', 'telugu-news', 'tts']
 ),
@@ -121,7 +106,7 @@ INSERT INTO public.websites (
     '#ea580c',
     true,
     false,
-    8,
+    7,
     'pujas',
     ARRAY['pujas', 'vedic', 'mantras', 'sankalpam', 'samagri', 'temple-bell', 'telugu']
 ),
@@ -136,7 +121,7 @@ INSERT INTO public.websites (
     '#6366f1',
     true,
     true,
-    9,
+    8,
     'shareit',
     ARRAY['webrtc', 'screenshare', 'video-call', 'file-transfer', 'remote-control', 'mqtt']
 ),
@@ -151,7 +136,7 @@ INSERT INTO public.websites (
     '#ef4444',
     true,
     false,
-    10,
+    9,
     'shortshub',
     ARRAY['shorts', 'youtube', 'tamil', 'telugu', 'snaptube', 'pwa', 'video-player']
 ),
@@ -166,24 +151,9 @@ INSERT INTO public.websites (
     '#8b5cf6',
     true,
     true,
-    11,
+    10,
     'study',
     ARRAY['ncert', 'cbse', 'comics', 'mini-labs', 'quiz', 'audio-narration', 'education']
-),
-(
-    'webbuilder',
-    'WebForge Studio',
-    'Visual full-stack website builder with 55 blocks, 12 templates, database designer & Next.js/PHP/ZIP export.',
-    'Mobirise-style visual block builder with live viewport switching, visual relational database designer with PostgreSQL RLS, 12 full-stack starter templates, autonomous AI Co-Pilot, and 1-click code export.',
-    '/site/webbuilder',
-    'Developer Tools',
-    'Layers',
-    '#0ea5e9',
-    true,
-    true,
-    12,
-    'webbuilder',
-    ARRAY['web-builder', 'no-code', 'blocks', 'database-designer', 'nextjs', 'php', 'codegen']
 )
 ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,

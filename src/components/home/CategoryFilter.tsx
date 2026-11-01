@@ -38,7 +38,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     : 'bg-slate-100 dark:bg-midnight-800 text-slate-500'
                 }`}
               >
-                {cat === 'All' ? categoryCounts['All'] || 12 : count}
+                {cat === 'All' ? categoryCounts['All'] || 10 : count}
               </span>
             </button>
           );

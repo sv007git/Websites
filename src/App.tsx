@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/layout/Header';
-import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { Loader2 } from 'lucide-react';
 
@@ -10,14 +9,12 @@ const ChatModule = lazy(() => import('./modules/chat/ChatModule'));
 const CookFoodModule = lazy(() => import('./modules/cookfood/CookFoodModule'));
 const DoctorModule = lazy(() => import('./modules/doctor/DoctorModule'));
 const ErpModule = lazy(() => import('./modules/erp/ErpModule'));
-const IdeModule = lazy(() => import('./modules/ide/IdeModule'));
 const InviteDecideModule = lazy(() => import('./modules/invitedecide/InviteDecideModule'));
 const MyPageModule = lazy(() => import('./modules/mypage/MyPageModule'));
 const PujasModule = lazy(() => import('./modules/pujas/PujasModule'));
 const ShareItModule = lazy(() => import('./modules/shareit/ShareItModule'));
 const ShortsHubModule = lazy(() => import('./modules/shortshub/ShortsHubModule'));
 const StudyModule = lazy(() => import('./modules/study/StudyModule'));
-const WebBuilderModule = lazy(() => import('./modules/webbuilder/WebBuilderModule'));
 
 // Loading spinner fallback
 const ModuleLoadingFallback: React.FC<{ name?: string }> = ({ name = 'Application' }) => (
@@ -34,19 +31,10 @@ const ModuleLoadingFallback: React.FC<{ name?: string }> = ({ name = 'Applicatio
   </div>
 );
 
-// App Content layout wrapper with dynamic footer rendering
+// App Content layout wrapper — header & full page viewports, no footer anywhere
 const AppLayout: React.FC = () => {
-  const location = useLocation();
-
-  // Fullscreen studio environments look cleaner without the bottom platform footer
-  const isFullscreenStudio =
-    location.pathname.startsWith('/site/ide') ||
-    location.pathname.startsWith('/site/webbuilder') ||
-    location.pathname.startsWith('/site/erp') ||
-    location.pathname.startsWith('/site/chat');
-
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-midnight-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-text)] transition-colors">
       <Header />
       <main className="flex-1 w-full">
         <Suspense fallback={<ModuleLoadingFallback />}>
@@ -54,7 +42,7 @@ const AppLayout: React.FC = () => {
             {/* Super Central Homepage */}
             <Route path="/" element={<HomePage />} />
 
-            {/* 12 Individual Website Applications */}
+            {/* 10 Individual Website Applications */}
             <Route
               path="/site/chat/*"
               element={
@@ -84,14 +72,6 @@ const AppLayout: React.FC = () => {
               element={
                 <Suspense fallback={<ModuleLoadingFallback name="Enterprise ERP Suite" />}>
                   <ErpModule />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/site/ide/*"
-              element={
-                <Suspense fallback={<ModuleLoadingFallback name="Antigravity IDE" />}>
-                  <IdeModule />
                 </Suspense>
               }
             />
@@ -143,21 +123,12 @@ const AppLayout: React.FC = () => {
                 </Suspense>
               }
             />
-            <Route
-              path="/site/webbuilder/*"
-              element={
-                <Suspense fallback={<ModuleLoadingFallback name="WebForge Studio" />}>
-                  <WebBuilderModule />
-                </Suspense>
-              }
-            />
 
             {/* Fallback redirect */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </main>
-      {!isFullscreenStudio && <Footer />}
     </div>
   );
 };

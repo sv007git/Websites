@@ -17,15 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@webforge/schema": ["src/modules/webbuilder/packages/schema/src"],
-      "@webforge/design-system": ["src/modules/webbuilder/packages/design-system/src"],
-      "@webforge/editor-core": ["src/modules/webbuilder/packages/editor-core/src"],
-      "@webforge/block-registry": ["src/modules/webbuilder/packages/block-registry/src"],
-      "@webforge/template-registry": ["src/modules/webbuilder/packages/template-registry/src"],
-      "@webforge/backend-adapters": ["src/modules/webbuilder/packages/backend-adapters/src"],
-      "@webforge/codegen": ["src/modules/webbuilder/packages/codegen/src"],
-      "@webforge/integrations": ["src/modules/webbuilder/packages/integrations/src"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src", "vite.config.ts"],

@@ -5,7 +5,7 @@
 [![Shared Backend](https://img.shields.io/badge/Backend-Single%20Supabase%20PostgreSQL-green?style=flat&logo=supabase)](https://supabase.com)
 [![Multi-Theme](https://img.shields.io/badge/Theme%20Engine-Black%20%7C%20White%20%7C%207%20Palettes-purple?style=flat)](https://sv007git.github.io/Websites/)
 
-> **A production-ready, GitHub Pages-hosted platform combining 12 independent, full-featured web applications into one unified super application.**
+> **A production-ready, GitHub Pages-hosted platform combining 10 independent, full-featured web applications into one unified super application.**
 
 ---
 
@@ -29,24 +29,22 @@ graph TD
     A --> D["Dynamic Central Registry<br/>(websiteRegistry.ts)"]
     A --> E["Unified Web Audio Engine<br/>(Chimes, Bells, Conch, SFX)"]
     
-    A --> F["12 Independent Applications (Level 2)"]
+    A --> F["10 Independent Applications (Level 2)"]
     F --> M1["01. Just You & Me (Chat)"]
     F --> M2["02. CookFood Recipes"]
     F --> M3["03. Doctor Anatomy"]
     F --> M4["04. Enterprise ERP Suite"]
-    F --> M5["05. Antigravity IDE"]
-    F --> M6["06. InviteDecide Royal Events"]
-    F --> M7["07. Prabhata Morning Sanctuary"]
-    F --> M8["08. Sanatana Pujas"]
-    F --> M9["09. ShareIT Live Screen"]
-    F --> M10["10. ShortsHub Video"]
-    F --> M11["11. NCERT Cartoon Academy"]
-    F --> M12["12. WebForge Studio (WebBuilder)"]
+    F --> M5["05. InviteDecide Royal Events"]
+    F --> M6["06. Prabhata Morning Sanctuary"]
+    F --> M7["07. Sanatana Pujas"]
+    F --> M8["08. ShareIT Live Screen"]
+    F --> M9["09. ShortsHub Video"]
+    F --> M10["10. NCERT Cartoon Academy"]
 ```
 
 ---
 
-## 3. The 12 Integrated Applications
+## 3. The 10 Integrated Applications
 
 Every single feature, dataset, calculator, and audio synthesis engine from each original application is preserved without degradation:
 
@@ -56,14 +54,12 @@ Every single feature, dataset, calculator, and audio synthesis engine from each 
 | **02** | **CookFood** | `/#/site/cookfood` | Lifestyle | 56 authentic Indian recipes, dynamic quantity scaling (0.5x, 1x, 2x, 4x), fraction formatting (1/2 tsp, 3/4 cup), interactive cooking timers. |
 | **03** | **Doctor** | `/#/site/doctor` | Lifestyle | Vector anatomy SVG body map (25 parts), 250 condition index, 8 holistic treatment pillars, Web Speech TTS, dual-oscillator health chimes. |
 | **04** | **Enterprise ERP** | `/#/site/erp` | Business | Complete React suite: CRM contacts/leads, Deals workstation with Chevron progression, Sales/Procurement, Inventory, Support tickets, HRM, General Ledger. |
-| **05** | **Antigravity IDE** | `/#/site/ide` | Developer Tools | Touch-friendly CodeMirror 5 editor, mobile symbol bar, in-browser terminal emulator, Pyodide Python 3 compilation sandbox, live preview, AI assistant. |
-| **06** | **InviteDecide** | `/#/site/invitedecide` | Business | Royal event SaaS: WhatsApp invitation generator, public token RSVP (`#/invite/:token`), catering buffer calculator, 2D table seating, gate QR check-in. |
-| **07** | **Prabhata** | `/#/site/mypage` | Spiritual | Jean Meeus celestial panchang algorithms, solar muhurtham timings, daily Vedic dharma guide, TV9 Telugu speed news ticker, contemplation sanctuary. |
-| **08** | **Sanatana Pujas** | `/#/site/pujas` | Spiritual | 21 authentic Vedic puja rituals, Priest Mode audio recitation with text tracking, synthesized bronze temple bell and conch audio engine, Vedic Sankalpam generator. |
-| **09** | **ShareIT** | `/#/site/shareit` | Business | Browser WebRTC screen sharing & presentation, collaborative telestrator pen, remote pointer coordinates, in-meeting chat, 16KB chunked file transfer. |
-| **10** | **ShortsHub** | `/#/site/shortshub` | Media | Vertical 9:16 Shorts player for Tamil, English, and Telugu, 4 strict curated categories, daily Dexie IndexedDB watchlist, SnapTube batch link exporter. |
-| **11** | **Cartoon Academy** | `/#/site/study` | Education | Class 1-12 NCERT curriculum chapters, Sunday comic strip educational stories, 6 interactive physics/math simulations, character English TTS narration. |
-| **12** | **WebForge Studio** | `/#/site/webbuilder` | Developer Tools | Visual drag-and-drop workspace canvas, 55 block registry across 8 categories, 12 production templates, relational RLS schema designer, Next.js/PHP/static code generator & ZIP exporter. |
+| **05** | **InviteDecide** | `/#/site/invitedecide` | Business | Royal event SaaS: WhatsApp invitation generator, public token RSVP (`#/invite/:token`), catering buffer calculator, 2D table seating, gate QR check-in. |
+| **06** | **Prabhata** | `/#/site/mypage` | Spiritual | Jean Meeus celestial panchang algorithms, solar muhurtham timings, daily Vedic dharma guide, TV9 Telugu speed news ticker, contemplation sanctuary. |
+| **07** | **Sanatana Pujas** | `/#/site/pujas` | Spiritual | 21 authentic Vedic puja rituals, Priest Mode audio recitation with text tracking, synthesized bronze temple bell and conch audio engine, Vedic Sankalpam generator. |
+| **08** | **ShareIT** | `/#/site/shareit` | Business | Browser WebRTC screen sharing & presentation, collaborative telestrator pen, remote pointer coordinates, in-meeting chat, 16KB chunked file transfer. |
+| **09** | **ShortsHub** | `/#/site/shortshub` | Media | Vertical 9:16 Shorts player for Tamil, English, and Telugu, 4 strict curated categories, daily Dexie IndexedDB watchlist, SnapTube batch link exporter. |
+| **10** | **Cartoon Academy** | `/#/site/study` | Education | Class 1-12 NCERT curriculum chapters, Sunday comic strip educational stories, 6 interactive physics/math simulations, character English TTS narration. |
 
 ---
 

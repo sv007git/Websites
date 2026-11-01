@@ -30,13 +30,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-4">
           One Central Platform.{' '}
           <span className="bg-gradient-to-r from-rose-500 via-indigo-500 to-cyan-500 bg-clip-text text-transparent">
-            Twelve Super Websites.
+            Ten Super Websites.
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 font-normal leading-relaxed mb-8">
-          Explore independent applications across productivity, health, culinary arts, developer tooling,
+          Explore independent applications across social relationships, health, culinary arts, business ERP,
           and Vedic traditions — unified under one domain with shared Supabase cloud and multi-theme styling.
         </p>
 
