@@ -7,6 +7,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { WebsiteModel, WebsiteModelRepository } from '../models/website.model';
 import { platformPresenter } from '../presenters/PlatformPresenter';
 import { audioPresenter } from '../presenters/AudioPresenter';
+import { useAuth } from '../services/auth/AuthContext';
 
 export interface HomeViewModelState {
   searchQuery: string;
@@ -20,6 +21,13 @@ export interface HomeViewModelState {
   favoriteWebsites: WebsiteModel[];
   categoryCounts: Record<string, number>;
   totalWebsitesCount: number;
+  // Auth & Controls state
+  isAuthOpen: boolean;
+  isMuted: boolean;
+  isAuthenticated: boolean;
+  isGuest: boolean;
+  userDisplayName: string;
+  userAvatarUrl?: string;
 }
 
 export interface HomeViewModelActions {
@@ -28,13 +36,21 @@ export interface HomeViewModelActions {
   toggleFavorite: (id: string) => void;
   openWebsite: (id: string) => void;
   clearSearch: () => void;
+  openAuth: () => void;
+  closeAuth: () => void;
+  toggleAudioMute: () => void;
+  signOut: () => Promise<void>;
 }
 
 export type HomeViewModel = HomeViewModelState & HomeViewModelActions;
 
 export function useHomeViewModel(): HomeViewModel {
+  const { user, profile, isAuthenticated, isGuest, signOut } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => audioPresenter.isMuted());
+
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() =>
     platformPresenter.getFavorites()
   );
@@ -100,6 +116,20 @@ export function useHomeViewModel(): HomeViewModel {
     audioPresenter.playSound('tap');
   }, []);
 
+  const openAuth = useCallback(() => {
+    setIsAuthOpen(true);
+    audioPresenter.playSound('pop');
+  }, []);
+
+  const closeAuth = useCallback(() => {
+    setIsAuthOpen(false);
+  }, []);
+
+  const toggleAudioMute = useCallback(() => {
+    const muted = audioPresenter.toggleMute();
+    setIsMuted(muted);
+  }, []);
+
   return {
     searchQuery,
     selectedCategory,
@@ -112,10 +142,20 @@ export function useHomeViewModel(): HomeViewModel {
     favoriteWebsites,
     categoryCounts,
     totalWebsitesCount: allWebsites.length,
+    isAuthOpen,
+    isMuted,
+    isAuthenticated,
+    isGuest,
+    userDisplayName: profile?.display_name || user?.email || 'Guest',
+    userAvatarUrl: profile?.avatar_url,
     setSearchQuery: handleSetSearchQuery,
     setSelectedCategory: handleSetCategory,
     toggleFavorite: handleToggleFavorite,
     openWebsite: handleOpenWebsite,
     clearSearch: handleClearSearch,
+    openAuth,
+    closeAuth,
+    toggleAudioMute,
+    signOut,
   };
 }

@@ -4,11 +4,23 @@
 // ================================================================================
 
 import React from 'react';
-import { Search, X, Sparkles, Grid, Layers } from 'lucide-react';
+import {
+  Search,
+  X,
+  Sparkles,
+  Grid,
+  Layers,
+  Volume2,
+  VolumeX,
+  User,
+  LogOut,
+} from 'lucide-react';
 import { HomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { CategoryFilterView } from './CategoryFilterView';
 import { WebsiteCardView } from './WebsiteCardView';
 import { FavoritesSectionView } from './FavoritesSectionView';
+import { ThemeSwitcherView } from '../shared/ThemeSwitcherView';
+import { AuthModalView } from '../shared/AuthModalView';
 
 export interface HomePageViewProps {
   viewModel: HomeViewModel;
@@ -23,17 +35,27 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
     favoriteWebsites,
     categoryCounts,
     totalWebsitesCount,
+    isAuthOpen,
+    isMuted,
+    isAuthenticated,
+    isGuest,
+    userDisplayName,
+    userAvatarUrl,
     setSearchQuery,
     setSelectedCategory,
     toggleFavorite,
     openWebsite,
     clearSearch,
+    openAuth,
+    closeAuth,
+    toggleAudioMute,
+    signOut,
   } = viewModel;
 
   return (
     <div className="min-h-screen pb-20">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Top Control Bar: Title, Count Badge & Compact Search */}
+        {/* Top Control Bar: Title, Count Badge, Search, Theme Picker & Sign In */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
@@ -42,7 +64,7 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                  Explore Websites
+                  WEBSITES
                 </h1>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200/80 dark:bg-midnight-800 text-slate-700 dark:text-slate-300">
                   {totalWebsitesCount} Apps
@@ -54,27 +76,88 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
             </div>
           </div>
 
-          {/* Compact In-Page Search Bar */}
-          <div className="relative w-full sm:w-80">
-            <div className="relative flex items-center rounded-2xl bg-white dark:bg-midnight-900 border border-slate-200 dark:border-midnight-700 p-1.5 shadow-xs focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
-              <Search className="w-4 h-4 text-slate-400 ml-2.5 mr-2 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search platforms, features..."
-                className="w-full bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none pr-2"
-              />
-              {searchQuery && (
-                <button
-                  onClick={clearSearch}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1"
-                  title="Clear search"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+          {/* Controls: Compact Search, Theme Picker, Sound & Sign In */}
+          <div className="flex items-center flex-wrap gap-2.5">
+            {/* Search Input Bar */}
+            <div className="relative flex-1 sm:w-64 md:w-72">
+              <div className="relative flex items-center rounded-2xl bg-white dark:bg-midnight-900 border border-slate-200 dark:border-midnight-700 p-1.5 shadow-xs focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
+                <Search className="w-4 h-4 text-slate-400 ml-2.5 mr-2 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search platforms..."
+                  className="w-full bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none pr-2"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1"
+                    title="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Audio Mute Toggle */}
+            <button
+              onClick={toggleAudioMute}
+              title={isMuted ? 'Unmute sound FX' : 'Mute sound FX'}
+              className="p-2 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-midnight-800 transition-colors focus:outline-none"
+            >
+              {isMuted ? (
+                <VolumeX className="w-4 h-4 text-rose-500" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+              )}
+            </button>
+
+            {/* Universal Multi-Theme Engine Switcher */}
+            <ThemeSwitcherView />
+
+            {/* Sign In / User Profile */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-1.5 pl-1">
+                <button
+                  onClick={openAuth}
+                  className="flex items-center gap-2 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-midnight-800 transition-colors focus:outline-none"
+                  title="View Profile"
+                >
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-xs">
+                    {userAvatarUrl ? (
+                      <img
+                        src={userAvatarUrl}
+                        alt={userDisplayName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      userDisplayName.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <span className="hidden md:inline text-xs font-semibold text-slate-700 dark:text-slate-300 max-w-[90px] truncate">
+                    {userDisplayName}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => signOut()}
+                  title="Sign Out"
+                  className="p-1.5 rounded-full text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-midnight-800 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={openAuth}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-sm hover:scale-105 transition-all focus:outline-none"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>{isGuest ? 'Guest Active' : 'Sign In'}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -140,6 +223,9 @@ export const HomePageView: React.FC<HomePageViewProps> = ({ viewModel }) => {
           </div>
         )}
       </main>
+
+      {/* Shared Auth Modal */}
+      <AuthModalView isOpen={isAuthOpen} onClose={closeAuth} />
     </div>
   );
 };
